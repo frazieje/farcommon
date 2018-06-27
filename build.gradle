@@ -24,6 +24,9 @@ jar {
     from (sourceSets.test.output) {
         include "com/spoohapps/farcommon/testhelpers/**"
     }
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
 }
 
 dependencies {
