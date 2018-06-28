@@ -5,11 +5,25 @@ import java.util.Map;
 
 public class Message {
 
-    private final String topic;
+    private String topic;
 
-    private final byte[] payload;
+    private byte[] payload;
 
-    private final Map<String, Object> headers;
+    private Map<String, Object> headers;
+
+    public Message() {}
+
+    public Message(String topic, byte[] payload) {
+        this.topic = topic;
+        this.payload = payload;
+        this.headers = new HashMap<>();
+    }
+
+    public Message(String topic, byte[] payload, Map<String, Object> headers) {
+        this.topic = topic;
+        this.payload = payload;
+        this.headers = headers;
+    }
 
     public String getTopic() {
         return topic;
@@ -31,15 +45,15 @@ public class Message {
         return headers;
     }
 
-    public Message(String topic, byte[] payload) {
+    public void setTopic(String topic) {
         this.topic = topic;
-        this.payload = payload;
-        this.headers = new HashMap<>();
     }
 
-    public Message(String topic, byte[] payload, Map<String, Object> headers) {
-        this.topic = topic;
+    public void setPayload(byte[] payload) {
         this.payload = payload;
+    }
+
+    public void setHeaders(Map<String, Object> headers) {
         this.headers = headers;
     }
 
