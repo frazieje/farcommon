@@ -9,14 +9,13 @@ public class Message {
 
     private byte[] payload;
 
-    private Map<String, Object> headers;
+    private Map<String, Object> headers = new HashMap<>();
 
     public Message() {}
 
     public Message(String topic, byte[] payload) {
         this.topic = topic;
         this.payload = payload;
-        this.headers = new HashMap<>();
     }
 
     public Message(String topic, byte[] payload, Map<String, Object> headers) {

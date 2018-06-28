@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeoutException;
 
-public class Amqp091ConnectionFactory implements ConnectionFactory {
+public class Amqp091ConnectionFactory implements ConnectionFactory  {
 
     private final Amqp091ConnectionSupplier connectionSupplier;
 
@@ -24,9 +24,16 @@ public class Amqp091ConnectionFactory implements ConnectionFactory {
 
     private List<Amqp091Channel> channels;
 
+    private boolean autoDisconnect = true;
+
     public Amqp091ConnectionFactory(Amqp091ConnectionSupplier connectionSupplier) {
         this.connectionSupplier = connectionSupplier;
         channels = new ArrayList<>();
+    }
+
+    public Amqp091ConnectionFactory(Amqp091ConnectionSupplier connectionSupplier, boolean autoDisconnect) {
+        this(connectionSupplier);
+        this.autoDisconnect = autoDisconnect;
     }
 
     @Override
@@ -63,15 +70,17 @@ public class Amqp091ConnectionFactory implements ConnectionFactory {
     }
 
     private synchronized void channelShutdown(Amqp091Connection owner, Amqp091Channel channel, String reason) {
-        logger.debug("Shutdown signal from channel on connection: {}. total channels = {}", connection.getName(), channels.size());
-        channels.remove(channel);
-        if (owner == connection && connection != null && channels.size() == 0) {
-            logger.debug("All channels gone for connection: {}, closing connection.", connection.getName());
-            try {
-                connection.close();
-            } catch (Exception e) {
-                logger.error("Error closing connection", e);
-                connection = null;
+        if (channels.remove(channel));
+        {
+            logger.debug("Shutdown signal from channel on connection: {}. remaining channels = {}", connection.getName(), channels.size());
+            if (autoDisconnect && owner == connection && connection != null && channels.size() == 0) {
+                logger.debug("All channels gone for connection: {}, closing connection.", connection.getName());
+                try {
+                    connection.close();
+                } catch (Exception e) {
+                    logger.error("Error closing connection", e);
+                    connection = null;
+                }
             }
         }
     }
@@ -92,10 +101,26 @@ public class Amqp091ConnectionFactory implements ConnectionFactory {
 
         final Amqp091ConnectionFactory other = (Amqp091ConnectionFactory) obj;
 
+        if (autoDisconnect != other.autoDisconnect)
+            return false;
+
         if (connectionSupplier == null ? other.connectionSupplier != null : !connectionSupplier.equals(other.connectionSupplier))
             return false;
 
         return true;
+    }
+
+    @Override
+    public void recycle() {
+        logger.debug("recycle connection: {}", connection != null ? connection.getName() : "null");
+        if (connection != null) {
+            try {
+                connection.close();
+            } catch (Exception e) {
+                logger.error("Error closing connection", e);
+                connection = null;
+            }
+        }
     }
 
 }

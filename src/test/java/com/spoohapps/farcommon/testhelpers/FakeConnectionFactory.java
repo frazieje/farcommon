@@ -15,6 +15,11 @@ public class FakeConnectionFactory implements ConnectionFactory {
     }
 
     @Override
+    public void recycle() {
+
+    }
+
+    @Override
     public PublisherConnection newPublisherConnection(ConnectionSettings settings) {
         return new FakePublisherConnection();
     }

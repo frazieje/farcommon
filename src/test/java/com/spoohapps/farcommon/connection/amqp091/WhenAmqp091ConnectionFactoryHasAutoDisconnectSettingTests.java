@@ -15,12 +15,11 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
-import static org.mockito.Mockito.mock;
-
 import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class Amqp091ConnectionFactoryTests {
+public class WhenAmqp091ConnectionFactoryHasAutoDisconnectSettingTests {
 
     private Amqp091ConnectionSupplier mockConnectionSupplier;
     private Amqp091Connection mockConnection;
@@ -49,58 +48,22 @@ public class Amqp091ConnectionFactoryTests {
     }
 
     @Test
-    public void shouldGetUnderlyingConnectionWhenPublisherConnectionOpened() throws IOException, TimeoutException {
-        PublisherConnection connection = factory.newPublisherConnection(
-                new Amqp091PublisherConnectionSettings(
-                        expectedExchange
-                ));
-        connection.open();
-        verify(mockConnectionSupplier).newConnection();
-    }
-
-    @Test
-    public void shouldGetUnderlyingConnectionWhenConsumerConnectionOpened() throws IOException, TimeoutException {
-        ConsumerConnection connection = factory.newConsumerConnection(
-                new Amqp091ConsumerConnectionSettings(
-                        expectedExchange,
-                        expectedQueue,
-                        expectedRoutingKey
-                ));
-        connection.open();
-        verify(mockConnectionSupplier).newConnection();
-    }
-
-    @Test
-    public void shouldGetUnderlyingConnectionWhenMultipleConnectionsOpened() throws IOException, TimeoutException {
+    public void shouldCloseUnderlyingConnectionWhenAllChannelsClosed() throws IOException, TimeoutException {
         PublisherConnection publisher = factory.newPublisherConnection(
                 new Amqp091PublisherConnectionSettings(
                         expectedExchange
                 ));
         publisher.open();
-        ConsumerConnection consume = factory.newConsumerConnection(
+        ConsumerConnection consumer = factory.newConsumerConnection(
                 new Amqp091ConsumerConnectionSettings(
                         expectedExchange,
                         expectedQueue,
                         expectedRoutingKey
                 ));
-        consume.open();
-        verify(mockConnectionSupplier, times(1)).newConnection();
+        consumer.open();
+        publisher.close();
+        consumer.close();
+        verify(mockConnection).close();
     }
 
-    @Test
-    public void shouldGetNewUnderlyingConnectionWhenClosed() throws IOException, TimeoutException {
-        PublisherConnection connection = factory.newPublisherConnection(
-                new Amqp091PublisherConnectionSettings(
-                        expectedExchange
-                ));
-        connection.open();
-        verify(mockConnection).addShutdownListener(closeCaptor.capture());
-        closeCaptor.getValue().accept("");
-        connection = factory.newPublisherConnection(
-                new Amqp091PublisherConnectionSettings(
-                        expectedExchange
-                ));
-        connection.open();
-        verify(mockConnectionSupplier, times(2)).newConnection();
-    }
 }

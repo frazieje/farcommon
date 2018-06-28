@@ -5,8 +5,6 @@ import com.spoohapps.farcommon.connection.ConsumerConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class Amqp091ConsumerConnection implements ConsumerConnection {
