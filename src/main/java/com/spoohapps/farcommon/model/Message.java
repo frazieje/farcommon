@@ -1,8 +1,11 @@
 package com.spoohapps.farcommon.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class Message {
 
     private String topic;
@@ -33,15 +36,20 @@ public class Message {
     }
 
     public Object getHeader(String key) {
-        return headers.get(key);
+        return getHeaders().get(key);
     }
 
     public void addHeader(String key, Object value) {
-        headers.put(key, value);
+        getHeaders().put(key, value);
     }
 
     public Map<String, Object> getHeaders() {
-        return headers;
+        if (headers != null) {
+            return headers;
+        } else {
+            headers = new HashMap<>();
+            return headers;
+        }
     }
 
     public void setTopic(String topic) {
