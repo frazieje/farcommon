@@ -5,6 +5,7 @@ import com.spoohapps.farcommon.connection.ConsumerConnection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.function.Consumer;
 
 public class Amqp091ConsumerConnection implements ConsumerConnection {
@@ -60,8 +61,11 @@ public class Amqp091ConsumerConnection implements ConsumerConnection {
     }
 
     private void consumeInternal(Amqp091Message message) {
-
-        Message newMessage = new Message(message.getRoutingKey(), message.getBody(), message.getHeaders());
+        Message newMessage =
+                new Message(
+                        message.getRoutingKey(),
+                        message.getBody(),
+                        new HashMap<>(message.getHeaders()));
 
         if (messageConsumer != null)
             messageConsumer.accept(newMessage);
