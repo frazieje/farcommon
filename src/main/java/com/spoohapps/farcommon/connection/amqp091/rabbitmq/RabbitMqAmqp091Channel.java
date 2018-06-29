@@ -59,7 +59,7 @@ public class RabbitMqAmqp091Channel implements Amqp091Channel {
 
     @Override
     public void queueDeclare(String queue) throws IOException {
-        sourceChannel.queueDeclare(queue, true, false, false, null);
+        sourceChannel.queueDeclare(queue, false, false, true, null);
     }
 
     @Override
