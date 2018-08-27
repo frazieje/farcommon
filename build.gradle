@@ -4,6 +4,13 @@ apply plugin: 'org.junit.platform.gradle.plugin'
 
 sourceCompatibility = 1.8
 
+def libraryGroupId = 'com.spoohapps'
+def libraryArtifactId = 'farcommon'
+def libraryVersion = '0.1.0'
+
+group = libraryGroupId
+version = libraryVersion
+
 buildscript {
     repositories {
         mavenCentral()
@@ -46,18 +53,10 @@ dependencies {
     testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
 }
 
-def libraryGroupId = 'com.spoohapps'
-def libraryArtifactId = 'farcommon'
-def libraryVersion = '0.1.0'
-
 publishing {
     publications {
-        aar(MavenPublication) {
-            groupId libraryGroupId
-            version libraryVersion
-            artifactId libraryArtifactId
-
-            artifact("$buildDir/outputs/aar/${artifactId}-release.aar")
+        farcommon(MavenPublication) {
+            from components.java
         }
     }
 }
@@ -67,12 +66,11 @@ artifactory {
     publish {
         repository {
             repoKey = 'libs-release-local'
-
             username = artifactory_username
             password = artifactory_password
         }
         defaults {
-            publications('aar')
+            publications('farcommon')
             publishArtifacts = true
             publishPom = true
         }
