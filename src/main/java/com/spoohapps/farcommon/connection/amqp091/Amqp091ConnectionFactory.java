@@ -111,7 +111,7 @@ public class Amqp091ConnectionFactory implements ConnectionFactory  {
     }
 
     @Override
-    public void recycle() {
+    public synchronized void recycle() {
         logger.debug("recycle connection: {}", connection != null ? connection.getName() : "null");
         if (connection != null) {
             try {
