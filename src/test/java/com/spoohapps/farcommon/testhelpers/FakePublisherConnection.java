@@ -1,7 +1,7 @@
 package com.spoohapps.farcommon.testhelpers;
 
 import com.spoohapps.farcommon.model.Message;
-import com.spoohapps.farcommon.connection.PublisherConnection;
+import com.spoohapps.farcommon.messaging.PublisherConnection;
 
 public class FakePublisherConnection implements PublisherConnection {
     @Override

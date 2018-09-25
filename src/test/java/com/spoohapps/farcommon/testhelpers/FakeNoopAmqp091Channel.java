@@ -1,7 +1,7 @@
 package com.spoohapps.farcommon.testhelpers;
 
-import com.spoohapps.farcommon.connection.amqp091.Amqp091Channel;
-import com.spoohapps.farcommon.connection.amqp091.Amqp091Message;
+import com.spoohapps.farcommon.messaging.amqp091.Amqp091Channel;
+import com.spoohapps.farcommon.messaging.amqp091.Amqp091Message;
 
 import java.io.IOException;
 import java.util.ArrayList;

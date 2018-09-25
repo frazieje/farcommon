@@ -1,7 +1,7 @@
 package com.spoohapps.farcommon.testhelpers;
 
 import com.spoohapps.farcommon.model.Message;
-import com.spoohapps.farcommon.connection.ConsumerConnection;
+import com.spoohapps.farcommon.messaging.ConsumerConnection;
 
 import java.util.function.Consumer;
 

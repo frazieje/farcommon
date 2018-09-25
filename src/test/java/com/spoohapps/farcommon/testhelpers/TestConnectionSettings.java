@@ -1,6 +1,6 @@
 package com.spoohapps.farcommon.testhelpers;
 
-import com.spoohapps.farcommon.connection.ConnectionSettings;
+import com.spoohapps.farcommon.messaging.ConnectionSettings;
 
 import java.util.HashMap;
 import java.util.Map;

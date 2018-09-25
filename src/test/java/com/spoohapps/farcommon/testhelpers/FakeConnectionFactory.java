@@ -1,9 +1,9 @@
 package com.spoohapps.farcommon.testhelpers;
 
-import com.spoohapps.farcommon.connection.ConnectionFactory;
-import com.spoohapps.farcommon.connection.ConnectionSettings;
-import com.spoohapps.farcommon.connection.ConsumerConnection;
-import com.spoohapps.farcommon.connection.PublisherConnection;
+import com.spoohapps.farcommon.messaging.ConnectionFactory;
+import com.spoohapps.farcommon.messaging.ConnectionSettings;
+import com.spoohapps.farcommon.messaging.ConsumerConnection;
+import com.spoohapps.farcommon.messaging.PublisherConnection;
 
 import java.util.Objects;
 
