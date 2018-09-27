@@ -1,17 +1,16 @@
 package com.spoohapps.farcommon.httpClient.gahc;
 
+import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Param;
+import com.ning.http.client.Response;
 import com.ning.http.client.cookie.Cookie;
 import com.spoohapps.farcommon.httpClient.*;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 import java.util.stream.Collectors;
 
 public class GrizzlyHttpRequestBuilder implements HttpRequestBuilder {
@@ -164,31 +163,11 @@ public class GrizzlyHttpRequestBuilder implements HttpRequestBuilder {
 
     @Override
     public Future<HttpResponse> execute() {
-        return new Future<HttpResponse>() {
+        return requestBuilder.execute(new AsyncCompletionHandler<HttpResponse>() {
             @Override
-            public boolean cancel(boolean mayInterruptIfRunning) {
-                return requestBuilder.execute().cancel(mayInterruptIfRunning);
+            public HttpResponse onCompleted(Response response) {
+                return new GrizzlyHttpResponse(response);
             }
-
-            @Override
-            public boolean isCancelled() {
-                return requestBuilder.execute().isCancelled();
-            }
-
-            @Override
-            public boolean isDone() {
-                return requestBuilder.execute().isDone();
-            }
-
-            @Override
-            public HttpResponse get() throws InterruptedException, ExecutionException {
-                return new GrizzlyHttpResponse(requestBuilder.execute().get());
-            }
-
-            @Override
-            public HttpResponse get(long timeout, TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
-                return new GrizzlyHttpResponse(requestBuilder.execute().get(timeout, unit));
-            }
-        };
+        });
     }
 }
