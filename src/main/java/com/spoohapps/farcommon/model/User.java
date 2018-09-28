@@ -1,6 +1,10 @@
 package com.spoohapps.farcommon.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class User {
+
+    private String id;
 
     private String firstName;
     private String lastName;
@@ -28,5 +32,14 @@ public class User {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    @JsonProperty("_id")
+    public void setId(String id) {
+        this.id = id;
     }
 }
