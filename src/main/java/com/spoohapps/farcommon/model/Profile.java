@@ -153,7 +153,7 @@ public class Profile {
         id = lower;
     }
 
-    private void verifyProfileId(String id) {
+    static void verifyProfileId(String id) {
         if (id.length() != PROFILE_ID_LENGTH)
             throw new IllegalArgumentException("Profile id should be " + PROFILE_ID_LENGTH + " characters long.");
         for (int i = 0; i < id.length(); i++) {
