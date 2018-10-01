@@ -194,8 +194,6 @@ public class TLSContext {
 
             SSLContext c = SSLContext.getInstance("TLSv1.2");
 
-            TrustManager[] managers = tmf.getTrustManagers();
-
             c.init(kmf.getKeyManagers(), tmf.getTrustManagers(), null);
 
             return c;
