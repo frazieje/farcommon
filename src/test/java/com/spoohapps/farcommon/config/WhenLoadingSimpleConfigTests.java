@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WhenLoadingSimpleConfigTests {
@@ -29,7 +30,7 @@ public class WhenLoadingSimpleConfigTests {
                                 "-c", String.valueOf(expectedInt),
                                 "-s", expectedInteger.toString(),
                                 "-correct", String.valueOf(expectedBool),
-                                "-done", String.valueOf(expectedBoolean),
+                                "-done", String.valueOf(expectedBoolean)
                         })
                         .build();
     }
@@ -64,6 +65,16 @@ public class WhenLoadingSimpleConfigTests {
         assertEquals(expectedBoolean, testConfig.isDone());
     }
 
+    @Test
+    public void shouldReturnNullForUnspecifiedBoxedType() {
+        assertNull(testConfig.integerUnspecified());
+    }
+
+    @Test
+    public void shouldReturnDefaultValueForPrimitiveType() {
+        assertEquals(0, testConfig.primitiveUnspecified());
+    }
+
     private interface TestConfigContract {
 
         @ConfigFlags({"n", "name"})
@@ -83,6 +94,12 @@ public class WhenLoadingSimpleConfigTests {
 
         @ConfigFlags("done")
         Boolean isDone();
+
+        @ConfigFlags("nonexistent")
+        Integer integerUnspecified();
+
+        @ConfigFlags("alsononexistent")
+        int primitiveUnspecified();
 
     }
 
