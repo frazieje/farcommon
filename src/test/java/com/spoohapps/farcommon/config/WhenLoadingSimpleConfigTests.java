@@ -1,5 +1,6 @@
 package com.spoohapps.farcommon.config;
 
+import com.spoohapps.farcommon.Config;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -20,16 +21,17 @@ public class WhenLoadingSimpleConfigTests {
 
     @BeforeAll
     public void setup() {
-        testConfig = new ConfigBuilder<>(TestConfigContract.class)
-                .apply(new String[]{
-                        "-n", expectedName,
-                        "-desc", expectedDescription,
-                        "-c", String.valueOf(expectedInt),
-                        "-s", expectedInteger.toString(),
-                        "-correct", String.valueOf(expectedBool),
-                        "-done", String.valueOf(expectedBoolean),
-                })
-                .build();
+        testConfig =
+                Config.from(TestConfigContract.class)
+                        .apply(new String[]{
+                                "-n", expectedName,
+                                "-desc", expectedDescription,
+                                "-c", String.valueOf(expectedInt),
+                                "-s", expectedInteger.toString(),
+                                "-correct", String.valueOf(expectedBool),
+                                "-done", String.valueOf(expectedBoolean),
+                        })
+                        .build();
     }
 
     @Test
@@ -62,26 +64,26 @@ public class WhenLoadingSimpleConfigTests {
         assertEquals(expectedBoolean, testConfig.isDone());
     }
 
-}
+    private interface TestConfigContract {
 
-interface TestConfigContract {
+        @ConfigFlags({"n", "name"})
+        String name();
 
-    @ConfigFlags({"n", "name"})
-    String name();
+        @ConfigFlags("desc")
+        String description();
 
-    @ConfigFlags("desc")
-    String description();
+        @ConfigFlags("s")
+        Integer size();
 
-    @ConfigFlags("s")
-    Integer size();
+        @ConfigFlags("c")
+        int count();
 
-    @ConfigFlags("c")
-    int count();
+        @ConfigFlags("correct")
+        boolean isCorrect();
 
-    @ConfigFlags("correct")
-    boolean isCorrect();
+        @ConfigFlags("done")
+        Boolean isDone();
 
-    @ConfigFlags("done")
-    Boolean isDone();
+    }
 
 }

@@ -10,13 +10,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ConfigBuilder<T> {
 
-    private final ConcurrentHashMap<Method, ConfigMethod<T>> methodCache = new ConcurrentHashMap<>();
-    private final ConcurrentHashMap<String, String> flagCache = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, ConfigMethod<T>> methodCache = new ConcurrentHashMap<>();
 
     private Class<T> typeRef;
 
     public ConfigBuilder(Class<T> clazz) {
         typeRef = clazz;
+        Arrays.stream(clazz.getDeclaredMethods())
+                .forEach(this::loadConfigMethod);
     }
 
     @SuppressWarnings("unchecked")
@@ -35,23 +36,21 @@ public class ConfigBuilder<T> {
                                 .bindTo(proxy)
                                 .invokeWithArguments(args);
                     }
-
                     ConfigMethod<T> cfm = loadConfigMethod(method);
-                    cfm.getFlags().forEach(f -> cfm.applyConfigValue(flagCache.get(f)));
                     return cfm.invoke(args != null ? args : new Object[0]);
                 });
 
     }
 
     private ConfigMethod<T> loadConfigMethod(Method method) {
-        ConfigMethod<T> result = methodCache.get(method);
+        ConfigMethod<T> result = methodCache.get(method.getName());
         if (result != null) return result;
 
         synchronized (methodCache) {
-            result = methodCache.get(method);
+            result = methodCache.get(method.getName());
             if (result == null) {
                 result = ConfigMethod.parseAnnotations(method);
-                methodCache.put(method, result);
+                methodCache.put(method.getName(), result);
             }
         }
         return result;
@@ -67,7 +66,13 @@ public class ConfigBuilder<T> {
 
             prop.load(stream);
 
-            prop.stringPropertyNames().forEach(p -> flagCache.put(p, prop.getProperty(p)));
+            methodCache.values()
+                    .forEach(m -> prop.stringPropertyNames()
+                            .forEach(p -> {
+                                if (m.getFlags().contains(p)) {
+                                    m.applyConfigValue(prop.getProperty(p));
+                                }
+                            }));
 
             return this;
 
@@ -90,7 +95,12 @@ public class ConfigBuilder<T> {
             if (args[i].startsWith("-") && i != (args.length - 1)) {
                 String arg = args[i].substring(1);
                 String val = args[i + 1];
-                flagCache.put(arg, val);
+                methodCache.values()
+                        .forEach(m -> {
+                            if (m.getFlags().contains(arg)) {
+                                m.applyConfigValue(val);
+                            }
+                        });
             }
         }
         return this;
@@ -98,14 +108,15 @@ public class ConfigBuilder<T> {
 
     public ConfigBuilder<T> apply(T other) {
         Arrays.stream(other.getClass().getDeclaredMethods())
-                .filter(method -> Modifier.isPublic(method.getModifiers()) && method.getParameterCount() == 0)
+                .filter(method ->
+                        method.getDeclaringClass() != Object.class
+                        && Modifier.isPublic(method.getModifiers())
+                        && method.getParameterCount() == 0
+                        && !method.isDefault())
                 .forEach(method -> {
                     try {
-                        loadConfigMethod(method).applyConfigValue(method.invoke(other).toString());
-                    } catch (IllegalAccessException
-                            | InvocationTargetException e) {
-                        e.printStackTrace();
-                    }
+                        methodCache.get(method.getName()).applyConfigValue(method.invoke(other).toString());
+                    } catch (NullPointerException | IllegalAccessException | InvocationTargetException ignored) {}
                 });
         return this;
     }
