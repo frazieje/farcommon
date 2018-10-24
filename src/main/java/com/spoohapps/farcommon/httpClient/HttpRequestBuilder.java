@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 public interface HttpRequestBuilder {
 
@@ -44,6 +45,8 @@ public interface HttpRequestBuilder {
      HttpRequestBuilder setFollowRedirects(boolean followRedirects);
 
      HttpRequestBuilder addOrReplaceCookie(HttpCookie c);
+
+     void execute(Consumer<HttpResponse> responseConsumer);
 
      Future<HttpResponse> execute();
 

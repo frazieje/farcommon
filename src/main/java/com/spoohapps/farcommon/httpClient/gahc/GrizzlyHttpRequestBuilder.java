@@ -10,7 +10,8 @@ import com.spoohapps.farcommon.httpClient.*;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.*;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 public class GrizzlyHttpRequestBuilder implements HttpRequestBuilder {
@@ -162,10 +163,21 @@ public class GrizzlyHttpRequestBuilder implements HttpRequestBuilder {
     }
 
     @Override
+    public void execute(final Consumer<HttpResponse> responseConsumer) {
+        requestBuilder.execute(new AsyncCompletionHandler<Void>() {
+            @Override
+            public Void onCompleted(Response response) throws Exception {
+                responseConsumer.accept(new GrizzlyHttpResponse(response));
+                return null;
+            }
+        });
+    }
+
+    @Override
     public Future<HttpResponse> execute() {
         return requestBuilder.execute(new AsyncCompletionHandler<HttpResponse>() {
             @Override
-            public HttpResponse onCompleted(Response response) {
+            public HttpResponse onCompleted(Response response) throws Exception {
                 return new GrizzlyHttpResponse(response);
             }
         });
