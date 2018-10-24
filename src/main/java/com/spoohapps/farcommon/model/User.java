@@ -1,5 +1,7 @@
 package com.spoohapps.farcommon.model;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +13,9 @@ public class User {
     private String lastName;
     private String password;
     private String email;
+
+    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    private boolean isAdmin;
 
     private List<Permission> permissions = new ArrayList<>();
 
@@ -60,5 +65,13 @@ public class User {
 
     public void setPermissions(List<Permission> permissions) {
         this.permissions = permissions;
+    }
+
+    public boolean isAdmin() {
+        return isAdmin;
+    }
+
+    public void setAdmin(boolean admin) {
+        isAdmin = admin;
     }
 }
