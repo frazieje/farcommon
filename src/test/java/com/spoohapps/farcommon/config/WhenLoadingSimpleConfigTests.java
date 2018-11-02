@@ -5,7 +5,13 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
@@ -19,6 +25,8 @@ public class WhenLoadingSimpleConfigTests {
     private final Integer expectedInteger = 24;
     private final boolean expectedBool = true;
     private final Boolean expectedBoolean = Boolean.FALSE;
+    private final List<String> expectedStringList = Arrays.asList("string1", "string2");
+    private final List<Integer> expectedIntegerList = Arrays.asList(0,1,2,3);
 
     @BeforeAll
     public void setup() {
@@ -30,7 +38,9 @@ public class WhenLoadingSimpleConfigTests {
                                 "-c", String.valueOf(expectedInt),
                                 "-s", expectedInteger.toString(),
                                 "-correct", String.valueOf(expectedBool),
-                                "-done", String.valueOf(expectedBoolean)
+                                "-done", String.valueOf(expectedBoolean),
+                                "-stringlist", String.join(",", expectedStringList),
+                                "-integerlist", expectedIntegerList.stream().map(String::valueOf).collect(Collectors.joining(","))
                         })
                         .build();
     }
@@ -75,6 +85,17 @@ public class WhenLoadingSimpleConfigTests {
         assertEquals(0, testConfig.primitiveUnspecified());
     }
 
+    @Test
+    public void shouldReturnListOfStrings() {
+        assertIterableEquals(expectedStringList, testConfig.stringList());
+    }
+
+    @Test
+    public void shouldReturnListOfIntegers() {
+        assertIterableEquals(expectedIntegerList, testConfig.integerList());
+    }
+
+
     private interface TestConfigContract {
 
         @ConfigFlags({"n", "name"})
@@ -100,6 +121,12 @@ public class WhenLoadingSimpleConfigTests {
 
         @ConfigFlags("alsononexistent")
         int primitiveUnspecified();
+
+        @ConfigFlags("stringlist")
+        List<String> stringList();
+
+        @ConfigFlags("integerlist")
+        List<Integer> integerList();
 
     }
 

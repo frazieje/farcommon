@@ -2,11 +2,12 @@ package com.spoohapps.farcommon.config;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.TypeVariable;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 class ConfigMethod<T> {
 
@@ -122,7 +123,20 @@ class ConfigMethod<T> {
                 return (T) Boolean.valueOf(false);
             }
         }
-
+        if (valueType.isAssignableFrom(List.class)) {
+            Type returnType = method.getGenericReturnType();
+            if (returnType instanceof ParameterizedType) {
+                Type[] typeParameters = ((ParameterizedType) returnType).getActualTypeArguments();
+                if (typeParameters.length == 1) {
+                    if (((Class) typeParameters[0]).isAssignableFrom(String.class)) {
+                        return (T) Arrays.asList(valueString.split(","));
+                    }
+                    if (((Class) typeParameters[0]).isAssignableFrom(Integer.class)) {
+                        return (T) Arrays.stream(valueString.split(",")).map(Integer::parseInt).collect(Collectors.toList());
+                    }
+                }
+            }
+        }
         throw new RuntimeException("Config method type not supported");
     }
 
