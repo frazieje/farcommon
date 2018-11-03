@@ -50,7 +50,6 @@ public class Amqp091PublisherConnection implements PublisherConnection {
         try {
             channel = channelSupplier.getChannel();
             channel.addShutdownListener(this::handleShutdown);
-            channel.exchangeDeclare(exchange);
             logger.info("publisher connection opened");
         } catch (Exception e) {
             logger.error("Error opening publisher channel", e);

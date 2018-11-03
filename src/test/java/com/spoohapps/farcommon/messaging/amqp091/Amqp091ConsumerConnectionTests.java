@@ -65,7 +65,7 @@ public class Amqp091ConsumerConnectionTests {
     public void shouldDeclareExchangeWhenOpened() throws IOException, TimeoutException {
         when(mockChannelSupplier.getChannel()).thenReturn(mockChannel);
         connection.open();
-        verify(mockChannel).exchangeDeclare(expectedExchange);
+        verify(mockChannel, times(0)).exchangeDeclare(expectedExchange);
     }
 
     @Test

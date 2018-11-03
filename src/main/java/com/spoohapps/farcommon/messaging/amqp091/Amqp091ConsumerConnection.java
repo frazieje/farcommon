@@ -49,7 +49,6 @@ public class Amqp091ConsumerConnection implements ConsumerConnection {
         try {
             channel = channelSupplier.getChannel();
             channel.addShutdownListener(this::handleShutdown);
-            channel.exchangeDeclare(exchange);
             channel.queueDeclare(queue);
             channel.queueBind(queue, exchange, routingKey);
             channel.consume(queue, this::consumeInternal, this::handleShutdown);

@@ -51,10 +51,10 @@ public class Amqp091PublisherConnectionTests {
     }
 
     @Test
-    public void shouldDeclareExchangeWhenOpened() throws IOException, TimeoutException {
+    public void shouldNotDeclareExchangeWhenOpened() throws IOException, TimeoutException {
         when(mockChannelSupplier.getChannel()).thenReturn(mockChannel);
         connection.open();
-        verify(mockChannel).exchangeDeclare(expectedExchange);
+        verify(mockChannel, times(0)).exchangeDeclare(expectedExchange);
     }
 
     @Test
@@ -75,6 +75,7 @@ public class Amqp091PublisherConnectionTests {
     public void shouldCloseWhenChannelThrowsIOException() throws IOException, TimeoutException {
         when(mockChannelSupplier.getChannel()).thenReturn(new FakeIOExceptionThrowingAmqp091Channel());
         connection.open();
+        connection.publish(new Message("some.topic", new byte[] { 1, 0 }));
         assertTrue(closed);
     }
 
