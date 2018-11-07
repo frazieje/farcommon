@@ -6,7 +6,7 @@ sourceCompatibility = 1.8
 
 def libraryGroupId = 'com.spoohapps'
 def libraryArtifactId = 'farcommon'
-def libraryVersion = '0.4.0'
+def libraryVersion = '0.4.1'
 
 group = libraryGroupId
 version = libraryVersion

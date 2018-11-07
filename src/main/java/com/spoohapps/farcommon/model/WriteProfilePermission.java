@@ -2,16 +2,21 @@ package com.spoohapps.farcommon.model;
 
 import java.util.Objects;
 
-public class WriteAnyDevicePermission implements Permission {
+public class WriteProfilePermission implements Permission {
+
     private String profileId;
+
+    public WriteProfilePermission() {
+
+    }
+
+    public WriteProfilePermission(String profileId) {
+        Profile.verifyProfileId(profileId);
+        this.profileId = profileId;
+    }
 
     public String getProfileId() {
         return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        Profile.verifyProfileId(profileId);
-        this.profileId = profileId;
     }
 
     @Override
@@ -21,15 +26,12 @@ public class WriteAnyDevicePermission implements Permission {
 
     @Override
     public boolean equals(Object other) {
-        if (!super.equals(other)) {
+
+        if (!(other instanceof WriteProfilePermission)) {
             return false;
         }
 
-        if (!WriteAnyDevicePermission.class.isAssignableFrom(other.getClass())) {
-            return false;
-        }
-
-        WriteAnyDevicePermission otherPermission = (WriteAnyDevicePermission) other;
+        WriteProfilePermission otherPermission = (WriteProfilePermission) other;
 
         if (!profileId.equals(otherPermission.profileId)) {
             return false;
@@ -40,6 +42,6 @@ public class WriteAnyDevicePermission implements Permission {
 
     @Override
     public int hashCode() {
-        return Objects.hash(profileId);
+        return Objects.hash(getClass().getSimpleName(), profileId);
     }
 }

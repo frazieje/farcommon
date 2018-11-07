@@ -2,17 +2,21 @@ package com.spoohapps.farcommon.model;
 
 import java.util.Objects;
 
-public class ReadAnyDevicePermission implements Permission {
+public class ReadProfilePermission implements Permission {
 
     private String profileId;
 
-    public String getProfileId() {
-        return profileId;
+    public ReadProfilePermission() {
+
     }
 
-    public void setProfileId(String profileId) {
+    public ReadProfilePermission(String profileId) {
         Profile.verifyProfileId(profileId);
         this.profileId = profileId;
+    }
+
+    public String getProfileId() {
+        return profileId;
     }
 
     @Override
@@ -22,15 +26,12 @@ public class ReadAnyDevicePermission implements Permission {
 
     @Override
     public boolean equals(Object other) {
-        if (!super.equals(other)) {
+
+        if (!(other instanceof ReadProfilePermission)) {
             return false;
         }
 
-        if (!ReadAnyDevicePermission.class.isAssignableFrom(other.getClass())) {
-            return false;
-        }
-
-        ReadAnyDevicePermission otherPermission = (ReadAnyDevicePermission) other;
+        ReadProfilePermission otherPermission = (ReadProfilePermission) other;
 
         if (!profileId.equals(otherPermission.profileId)) {
             return false;
@@ -41,7 +42,7 @@ public class ReadAnyDevicePermission implements Permission {
 
     @Override
     public int hashCode() {
-        return Objects.hash(profileId);
+        return Objects.hash(getClass().getSimpleName(), profileId);
     }
 
 }
