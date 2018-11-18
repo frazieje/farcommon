@@ -5,6 +5,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
 import java.util.*;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,9 +17,9 @@ public class Profile {
 
     private String id;
 
-    private TLSContext nodeContext = new TLSContext();
+    private TLSContext nodeContext;
 
-    private TLSContext apiContext = new TLSContext();
+    private Set<TLSContext> remoteContexts = ConcurrentHashMap.newKeySet();
 
     private static final String lineSeparator = System.getProperty("line.separator");
 
@@ -25,7 +27,7 @@ public class Profile {
 
     }
 
-    public static Profile from(String id, TLSContext nodeContext, TLSContext apiContext) {
+    public static Profile from(String id, TLSContext nodeContext, TLSContext ... remotes) {
         Profile p = from(id);
 
         if (nodeContext != null) {
@@ -34,11 +36,17 @@ public class Profile {
             p.nodeContext = nodeContext;
         }
 
-        if (apiContext != null) {
-            if (!apiContext.hasValue())
-                throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the api client.");
-            p.apiContext = apiContext;
+        if (remotes != null && remotes.length > 0) {
+            for (TLSContext remoteContext :
+                    remotes) {
+                if (remoteContext != null) {
+                    if (!remoteContext.hasValue())
+                        throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the remote client.");
+                    p.remoteContexts.add(remoteContext);
+                }
+            }
         }
+
         return p;
     }
 
@@ -50,7 +58,7 @@ public class Profile {
 
         String lower = id.toLowerCase();
 
-        p.verifyProfileId(lower);
+        verifyProfileId(lower);
 
         p.id = id;
 
@@ -72,12 +80,17 @@ public class Profile {
             try { profileStream.close(); } catch (Throwable ignore) {}
         }
 
-        if (p.id != null
-                || (p.getNodeContext() != null && p.getNodeContext().hasValue())
-                || (p.getApiContext() != null && p.getApiContext().hasValue()))
+        if (p.id != null) {
+            if (p.getNodeContext() != null && !p.getNodeContext().hasValue()) {
+                return null;
+            }
+            for (TLSContext remoteContext : p.getRemoteContexts()) {
+                if (remoteContext != null && !remoteContext.hasValue()) {
+                    return null;
+                }
+            }
+        }
         return p;
-
-        return null;
     }
 
     private static void readSection(Reader readerImpl, Map<String, Map.Entry<String, Consumer<String>>> delimiters) throws IOException {
@@ -101,6 +114,7 @@ public class Profile {
 
     private void readNode(String section) {
         String node = removeFirstAndLastLines(section);
+        nodeContext = new TLSContext();
         try {
             readSection(new StringReader(node), getSectionDetailDelimiters(this::readNodePrivateKey, this::readNodeCertificate, this::readNodeCaCertificate));
         } catch (IOException e) {
@@ -109,13 +123,21 @@ public class Profile {
         }
     }
 
-    private void readApi(String section) {
-        String api = removeFirstAndLastLines(section);
+    private void readRemote(String section) {
+        String remote = removeFirstAndLastLines(section);
+        TLSContext remoteContext = new TLSContext();
         try {
-            readSection(new StringReader(api), getSectionDetailDelimiters(this::readApiPrivateKey, this::readApiCertificate, this::readApiCaCertificate));
+            readSection(new StringReader(remote),
+                    getSectionDetailDelimiters(
+                            s -> readRemotePrivateKey(s, remoteContext),
+                            s -> readRemoteCertificate(s, remoteContext),
+                            s -> readRemoteCaCertificate(s, remoteContext)));
+            if (remoteContext.hasValue()) {
+                remoteContexts.add(remoteContext);
+            }
         } catch (IOException e) {
             e.printStackTrace();
-            throw new IllegalArgumentException("Improper profile format: could not read api section");
+            throw new IllegalArgumentException("Improper profile format: could not read remote section");
         }
     }
 
@@ -163,27 +185,27 @@ public class Profile {
         }
     }
 
-    private void readApiPrivateKey(String privateKey) {
+    private void readRemotePrivateKey(String privateKey, TLSContext remoteContext) {
         try {
-            apiContext.setPrivateKey(privateKey);
+            remoteContext.setPrivateKey(privateKey);
         } catch (TLSContextException e) {
-            throw new IllegalArgumentException("Problem reading api client key: " + e.getMessage());
+            throw new IllegalArgumentException("Problem reading remote client key: " + e.getMessage());
         }
     }
 
-    private void readApiCertificate(String certificate) {
+    private void readRemoteCertificate(String certificate, TLSContext remoteContext) {
         try {
-            apiContext.setCertificate(certificate);
+            remoteContext.setCertificate(certificate);
         } catch (TLSContextException e) {
-            throw new IllegalArgumentException("Problem reading api certificate: " + e.getMessage());
+            throw new IllegalArgumentException("Problem reading remote certificate: " + e.getMessage());
         }
     }
 
-    private void readApiCaCertificate(String certificate) {
+    private void readRemoteCaCertificate(String certificate, TLSContext remoteContext) {
         try {
-            apiContext.setCaCertificate(certificate);
+            remoteContext.setCaCertificate(certificate);
         } catch (TLSContextException e) {
-            throw new IllegalArgumentException("Problem reading api ca certificate: " + e.getMessage());
+            throw new IllegalArgumentException("Problem reading remote ca certificate: " + e.getMessage());
         }
     }
 
@@ -225,8 +247,10 @@ public class Profile {
             writeSection(encoder, buf, nodeContext, nodeStartDelimiter, nodeEndDelimiter);
         }
 
-        if (apiContext != null && apiContext.hasValue()) {
-            writeSection(encoder, buf, apiContext, apiStartDelimiter, apiEndDelimiter);
+        for (TLSContext remoteContext : remoteContexts) {
+            if (remoteContext != null && remoteContext.hasValue()) {
+                writeSection(encoder, buf, remoteContext, remoteStartDelimiter, remoteEndDelimiter);
+            }
         }
 
         return buf.toString().getBytes(StandardCharsets.UTF_8);
@@ -300,8 +324,8 @@ public class Profile {
         return nodeContext;
     }
 
-    public TLSContext getApiContext() {
-        return apiContext;
+    public Set<TLSContext> getRemoteContexts() {
+        return remoteContexts;
     }
 
     private final static String hexString = "0123456789abcdef";
@@ -312,8 +336,8 @@ public class Profile {
     private static final String nodeStartDelimiter = "-----BEGIN NODE-----";
     private static final String nodeEndDelimiter = "-----END NODE-----";
 
-    private static final String apiStartDelimiter = "-----BEGIN API-----";
-    private static final String apiEndDelimiter = "-----END API-----";
+    private static final String remoteStartDelimiter = "-----BEGIN REMOTE-----";
+    private static final String remoteEndDelimiter = "-----END REMOTE-----";
 
     private static final String clientCertAndKeyStartDelimiter = "-----BEGIN CLIENT CERT AND KEY-----";
     private static final String clientCertAndKeyEndDelimiter = "-----END CLIENT CERT AND KEY-----";
@@ -334,9 +358,9 @@ public class Profile {
                     getEntry(nodeStartDelimiter,
                             nodeEndDelimiter,
                             this::readNode),
-                    getEntry(apiStartDelimiter,
-                            apiEndDelimiter,
-                            this::readApi)
+                    getEntry(remoteStartDelimiter,
+                            remoteEndDelimiter,
+                            this::readRemote)
             ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
     private Map<String, Map.Entry<String, Consumer<String>>> getSectionDetailDelimiters(Consumer<String> readKey, Consumer<String> readCert, Consumer<String> readCaCert) {

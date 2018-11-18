@@ -12,7 +12,7 @@ import java.security.spec.InvalidKeySpecException;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenWritingApiProfileToByteArrayTests {
+public class WhenWritingRemoteProfileToByteArrayTests {
 
     Profile profile;
 
@@ -27,16 +27,16 @@ public class WhenWritingApiProfileToByteArrayTests {
         nodeContext.setCaCertificate(ProfileFileHelper.nodeCaCertificate());
 
         TLSContext apiContext = new TLSContext();
-        apiContext.setPrivateKey(ProfileFileHelper.apiPrivateKey());
-        apiContext.setCertificate(ProfileFileHelper.apiCertificate());
-        apiContext.setCaCertificate(ProfileFileHelper.apiCaCertificate());
+        apiContext.setPrivateKey(ProfileFileHelper.remotePrivateKey());
+        apiContext.setCertificate(ProfileFileHelper.remoteCertificate());
+        apiContext.setCaCertificate(ProfileFileHelper.remoteCaCertificate());
 
         profile = Profile.from(expectedProfileId, nodeContext, apiContext);
     }
 
     @Test
     public void shouldWriteCorrectBytes() {
-        assertArrayEquals(ProfileFileHelper.bytesWithProfileIdNodeAndApi(expectedProfileId), profile.toByteArray());
+        assertArrayEquals(ProfileFileHelper.bytesWithProfileIdNodeAndRemote(expectedProfileId), profile.toByteArray());
     }
 
 }

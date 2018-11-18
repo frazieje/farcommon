@@ -62,8 +62,8 @@ public class ProfileFileHelper {
         return streamOf(getProfileIdContents(profileId) + getNodeContents());
     }
 
-    public static InputStream streamWithProfileIdNodeAndApi(String profileId) {
-        return streamOf(getProfileIdContents(profileId) + getNodeContents() + getApiContents());
+    public static InputStream streamWithProfileIdNodeAndRemote(String profileId) {
+        return streamOf(getProfileIdContents(profileId) + getNodeContents() + getRemoteContents());
     }
 
     public static InputStream streamWithNode() {
@@ -78,8 +78,8 @@ public class ProfileFileHelper {
         return byteArrayOf(getProfileIdContents(profileId) + getNodeContents());
     }
 
-    public static byte[] bytesWithProfileIdNodeAndApi(String profileId) {
-        return byteArrayOf(getProfileIdContents(profileId) + getNodeContents() + getApiContents());
+    public static byte[] bytesWithProfileIdNodeAndRemote(String profileId) {
+        return byteArrayOf(getProfileIdContents(profileId) + getNodeContents() + getRemoteContents());
     }
 
     public static RSAPrivateKey nodePrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -94,16 +94,16 @@ public class ProfileFileHelper {
         return TLSUtils.certificateFrom(getNodeCaCertificateContents());
     }
 
-    public static RSAPrivateKey apiPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public static RSAPrivateKey remotePrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
         return TLSUtils.privateKeyFrom(getNodePrivateKeyContents());
     }
 
-    public static X509Certificate apiCertificate() throws CertificateException {
+    public static X509Certificate remoteCertificate() throws CertificateException {
         X509Certificate cert =  TLSUtils.certificateFrom(getNodeCertificateContents());
         return cert;
     }
 
-    public static X509Certificate apiCaCertificate() throws CertificateException {
+    public static X509Certificate remoteCaCertificate() throws CertificateException {
         return TLSUtils.certificateFrom(getNodeCaCertificateContents());
     }
 
@@ -120,8 +120,8 @@ public class ProfileFileHelper {
         return getContents("-----BEGIN NODE-----", "-----END NODE-----");
     }
 
-    private static String getApiContents() {
-        return getContents("-----BEGIN API-----", "-----END API-----");
+    private static String getRemoteContents() {
+        return getContents("-----BEGIN REMOTE-----", "-----END REMOTE-----");
     }
 
     private static String getContents(String startDelimiter, String endDelimiter) {

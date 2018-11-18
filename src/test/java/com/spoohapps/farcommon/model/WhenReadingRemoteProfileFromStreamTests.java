@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenReadingApiProfileFromStreamTests {
+public class WhenReadingRemoteProfileFromStreamTests {
 
     Profile profile;
 
@@ -21,7 +21,7 @@ public class WhenReadingApiProfileFromStreamTests {
 
     @BeforeAll
     public void setup() {
-        profile = Profile.from(ProfileFileHelper.streamWithProfileIdNodeAndApi(expectedProfileId));
+        profile = Profile.from(ProfileFileHelper.streamWithProfileIdNodeAndRemote(expectedProfileId));
     }
 
     @Test
@@ -46,22 +46,25 @@ public class WhenReadingApiProfileFromStreamTests {
 
     @Test
     public void shouldHaveTheCorrectApiCertificate() throws CertificateException {
-        assertArrayEquals(profile.getApiContext().getCertificate().getEncoded(), ProfileFileHelper.apiCertificate().getEncoded());
+        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
+        assertArrayEquals(remote.getCertificate().getEncoded(), ProfileFileHelper.remoteCertificate().getEncoded());
     }
 
     @Test
     public void shouldHaveTheCorrectApiPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        assertArrayEquals(profile.getApiContext().getPrivateKey().getEncoded(), ProfileFileHelper.apiPrivateKey().getEncoded());
+        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
+        assertArrayEquals(remote.getPrivateKey().getEncoded(), ProfileFileHelper.remotePrivateKey().getEncoded());
     }
 
     @Test
     public void shouldHaveTheCorrectApiCaCertificate() throws CertificateException {
-        assertArrayEquals(profile.getApiContext().getCaCertificate().getEncoded(), ProfileFileHelper.apiCaCertificate().getEncoded());
+        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
+        assertArrayEquals(remote.getCaCertificate().getEncoded(), ProfileFileHelper.remoteCaCertificate().getEncoded());
     }
 
     @Test
     public void shouldHaveTheCorrectBytes() {
-        assertArrayEquals(profile.toByteArray(), ProfileFileHelper.bytesWithProfileIdNodeAndApi(expectedProfileId));
+        assertArrayEquals(profile.toByteArray(), ProfileFileHelper.bytesWithProfileIdNodeAndRemote(expectedProfileId));
     }
 
 }
