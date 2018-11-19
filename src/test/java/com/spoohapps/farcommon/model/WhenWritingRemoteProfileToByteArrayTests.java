@@ -26,12 +26,13 @@ public class WhenWritingRemoteProfileToByteArrayTests {
         nodeContext.setCertificate(ProfileFileHelper.nodeCertificate());
         nodeContext.setCaCertificate(ProfileFileHelper.nodeCaCertificate());
 
-        TLSContext apiContext = new TLSContext();
-        apiContext.setPrivateKey(ProfileFileHelper.remotePrivateKey());
-        apiContext.setCertificate(ProfileFileHelper.remoteCertificate());
-        apiContext.setCaCertificate(ProfileFileHelper.remoteCaCertificate());
+        TLSContext remoteMessageContext = new TLSContext();
+        remoteMessageContext.setPrivateKey(ProfileFileHelper.remoteMessagingPrivateKey());
+        remoteMessageContext.setCertificate(ProfileFileHelper.remoteMessagingCertificate());
+        remoteMessageContext.setCaCertificate(ProfileFileHelper.remoteMessagingCaCertificate());
 
-        profile = Profile.from(expectedProfileId, nodeContext, apiContext);
+
+        profile = Profile.from(expectedProfileId, nodeContext, remoteMessageContext, null);
     }
 
     @Test

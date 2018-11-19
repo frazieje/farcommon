@@ -62,8 +62,12 @@ public class ProfileFileHelper {
         return streamOf(getProfileIdContents(profileId) + getNodeContents());
     }
 
-    public static InputStream streamWithProfileIdNodeAndRemote(String profileId) {
-        return streamOf(getProfileIdContents(profileId) + getNodeContents() + getRemoteContents());
+    public static InputStream streamWithProfileIdNodeAndMessagingRemote(String profileId) {
+        return streamOf(getProfileIdContents(profileId) + getNodeContents() + getMessagingRemoteContents());
+    }
+
+    public static InputStream streamWithProfileIdNodeAndMessagingAndAuthRemotes(String profileId) {
+        return streamOf(getProfileIdContents(profileId) + getNodeContents() + getMessagingRemoteContents() + getAuthRemoteContents());
     }
 
     public static InputStream streamWithNode() {
@@ -79,7 +83,11 @@ public class ProfileFileHelper {
     }
 
     public static byte[] bytesWithProfileIdNodeAndRemote(String profileId) {
-        return byteArrayOf(getProfileIdContents(profileId) + getNodeContents() + getRemoteContents());
+        return byteArrayOf(getProfileIdContents(profileId) + getNodeContents() + getMessagingRemoteContents());
+    }
+
+    public static byte[] bytesWithProfileIdNodeAndMultipleRemotes(String profileId) {
+        return byteArrayOf(getProfileIdContents(profileId) + getNodeContents() + getMessagingRemoteContents() + getAuthRemoteContents());
     }
 
     public static RSAPrivateKey nodePrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
@@ -91,20 +99,33 @@ public class ProfileFileHelper {
     }
 
     public static X509Certificate nodeCaCertificate() throws CertificateException {
-        return TLSUtils.certificateFrom(getNodeCaCertificateContents());
+        return TLSUtils.certificateFrom(getCaCertificateContents());
     }
 
-    public static RSAPrivateKey remotePrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
+    public static RSAPrivateKey remoteMessagingPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        return TLSUtils.privateKeyFrom(getRemoteMessagingPrivateKeyContents());
+    }
+
+    public static X509Certificate remoteMessagingCertificate() throws CertificateException {
+        X509Certificate cert =  TLSUtils.certificateFrom(getRemoteMessagingCertificateContents());
+        return cert;
+    }
+
+    public static X509Certificate remoteMessagingCaCertificate() throws CertificateException {
+        return TLSUtils.certificateFrom(getCaCertificateContents());
+    }
+
+    public static RSAPrivateKey remoteAuthPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
         return TLSUtils.privateKeyFrom(getNodePrivateKeyContents());
     }
 
-    public static X509Certificate remoteCertificate() throws CertificateException {
+    public static X509Certificate remoteAuthCertificate() throws CertificateException {
         X509Certificate cert =  TLSUtils.certificateFrom(getNodeCertificateContents());
         return cert;
     }
 
-    public static X509Certificate remoteCaCertificate() throws CertificateException {
-        return TLSUtils.certificateFrom(getNodeCaCertificateContents());
+    public static X509Certificate remoteAuthCaCertificate() throws CertificateException {
+        return TLSUtils.certificateFrom(getCaCertificateContents());
     }
 
     private static String getProfileIdContents(String profileId) {
@@ -117,14 +138,18 @@ public class ProfileFileHelper {
     }
 
     private static String getNodeContents() {
-        return getContents("-----BEGIN NODE-----", "-----END NODE-----");
+        return getNodeContents("-----BEGIN NODE-----", "-----END NODE-----");
     }
 
-    private static String getRemoteContents() {
-        return getContents("-----BEGIN REMOTE-----", "-----END REMOTE-----");
+    private static String getMessagingRemoteContents() {
+        return getMessagingRemoteContents("-----BEGIN REMOTE MESSAGING-----", "-----END REMOTE MESSAGING-----");
     }
 
-    private static String getContents(String startDelimiter, String endDelimiter) {
+    private static String getAuthRemoteContents() {
+        return getNodeContents("-----BEGIN REMOTE AUTH-----", "-----END REMOTE AUTH-----");
+    }
+
+    private static String getNodeContents(String startDelimiter, String endDelimiter) {
         StringBuilder buf = new StringBuilder();
         Consumer<String> w = getWriter(buf);
         w.accept(startDelimiter);
@@ -133,13 +158,26 @@ public class ProfileFileHelper {
         buf.append(getNodeCertificateContents());
         w.accept("-----END CLIENT CERT AND KEY-----");
         w.accept("-----BEGIN CA CERT-----");
-        buf.append(getNodeCaCertificateContents());
+        buf.append(getCaCertificateContents());
         w.accept("-----END CA CERT-----");
         w.accept(endDelimiter);
         return buf.toString();
     }
 
-
+    private static String getMessagingRemoteContents(String startDelimiter, String endDelimiter) {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept(startDelimiter);
+        w.accept("-----BEGIN CLIENT CERT AND KEY-----");
+        buf.append(getRemoteMessagingPrivateKeyContents());
+        buf.append(getRemoteMessagingCertificateContents());
+        w.accept("-----END CLIENT CERT AND KEY-----");
+        w.accept("-----BEGIN CA CERT-----");
+        buf.append(getCaCertificateContents());
+        w.accept("-----END CA CERT-----");
+        w.accept(endDelimiter);
+        return buf.toString();
+    }
 
     private static String getNodePrivateKeyContents() {
         StringBuilder buf = new StringBuilder();
@@ -204,7 +242,7 @@ public class ProfileFileHelper {
         return buf.toString();
     }
 
-    private static String getNodeCaCertificateContents() {
+    private static String getCaCertificateContents() {
         StringBuilder buf = new StringBuilder();
         Consumer<String> w = getWriter(buf);
         w.accept("-----BEGIN CERTIFICATE-----");
@@ -234,6 +272,70 @@ public class ProfileFileHelper {
         w.accept("d8+8R/mrlQ6qifUnn0WrSyh+Y1G7mOrNoZsvA0XR7twVNHr9hkfbgFJoD9xTsweK");
         w.accept("GxWaosg++cYKX22IQDO6o7X8WM0FVuH3bZla4CssyJ3HVZptI2wtWMHMbyvhJxkx");
         w.accept("Tjy2QViZVcY6O2frarkxPdSLhP2CrHn3QaVZnjvbhZ9+PXU6lUwyjQ==");
+        w.accept("-----END CERTIFICATE-----");
+        return buf.toString();
+    }
+
+    private static String getRemoteMessagingPrivateKeyContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN PRIVATE KEY-----");
+        w.accept("MIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDAsHFfNpQlNA32");
+        w.accept("H0Iss68jwssY5qiQOjxvK5QoymxLcOZnzTjhL4ugp9/kWSH0lnXvG/SOqcIU5/Ga");
+        w.accept("zMBXVJZ9a7dW+Lj/743sFf9wL21H2v1KB1IbNwr7ZaIHgKqgZ5GS/rPH4WaGGAig");
+        w.accept("K2bfWdFfCehunRWj3IPtD8sZfoSexd+lwgM4rmM6QGBOBpiOKTSQh0wbMalPsdVj");
+        w.accept("hVqdhYhNz4qZsc0QoSDEiMYCn9qIDktHAHDtRUXeA2j9eX1psqxzjJT3NzZFSfa5");
+        w.accept("Yc8vYV0WVAcPx8udEXlgB8bmTS6jsU6xYogd5+O0Td0GttEhHYhh8gnwYYBluj1o");
+        w.accept("s2iLpuhhAgMBAAECggEBAIFNZaao71zPw5anfzaUFTEAJF2/Wtn92lQXgEKnI2i0");
+        w.accept("iEibtFGYIDBctqd7EIga92TO85tQW0bAJqbkQyXXQ21CfTNFkI9eZ3RHhrP3f3O6");
+        w.accept("hkHJC9XrZ9kvaD10oAsntM5ZULcOkEfnlNI2jb/Pe+o0sd6YVs8wyO6prHadKc2I");
+        w.accept("e2laUh+T4UKHXjoGlk2qiv3PHoeF6P5V2PF1dhVzHX++4cN1/gybIerMrSFLs/DK");
+        w.accept("GRrwEFXWuNzhSEtXiwDys9JKV4FTYJJee3qM3PHb/JoJ86v8onz4Y1QP1ewTVB9p");
+        w.accept("snq96fz3P3AXCy2lVF/F1RXWEWT1MAYAbKL8ZmBTPuECgYEA9YPq4CN7QGCOLWpB");
+        w.accept("F2QgZrruuHaXEVChlohYGM6STIzbsilai5CxZOrDp0CgSwqPeSvK/6M4MmjjEF/l");
+        w.accept("I9/NsuP7aM680s26C4Wn9RvPV9qsqbRbBuzyXHSlS2RQxjNL6/S63SVT7tcL9/E4");
+        w.accept("4B8KJYaLAFJXJ201ezZF6jcjiS0CgYEAyOsB2vLMDSWfbVw9drVCI1IkuS9vM0dD");
+        w.accept("bcQ9RIn8iqjQ6P31MlOVocLL6G9/NbniGCDEVNAjvT/czZG9hrIhrDdLirHQ2BCj");
+        w.accept("nkO1bkb6E1rXB4r+ORa+Buy9dF8iNYALT4xNe7XTfE06qF2uo/0Xd7LPpabNuJHJ");
+        w.accept("DESbVRzRtIUCgYEAkjbsDGxVHLPkOJvNBBc3TLcLMIQ/16oDcdjlTnDHpBtHQ8Vp");
+        w.accept("DTEw1H8T4mmUjNxPMcSo8rHL6AmbIMdbeY/xuxYXRgXJYmnu4KnKqyjSxOmQZsjo");
+        w.accept("ZSl79R/qyQmHKWKnVnC7ULTIVbdwg0r/qkoSCuMjqR9glDRv418hKCmKWkkCgYA6");
+        w.accept("6GRn3I4lQKWou8Wtm2Fj1766qQSyhS9o7IOGJ+rqgKqX1XXhpo4VmnaMlLw4dWKr");
+        w.accept("7leCAnCoGSRVBWkLKAklZCT66j2wS9idG38DcT37FMQ9CuyUsm1OvHSjvQzboMow");
+        w.accept("LZO+NMZoCICtQqJkpF0QFFY7XFeuyNeoiCj+4G8/vQKBgDjrjtmRgllMTXteSyrt");
+        w.accept("hrku4Uax3PKtpVvsXfgojrO5//UgU4tVSmnCcKOwuGDF15vYdK9hYo5OfeHHTemp");
+        w.accept("t7SZSv/8fxWz5XUZplfX946YXY3gVGyaW9adqpvDUliJidBWs1l3FbnrlxtZ4U0F");
+        w.accept("PW1cVC+YJMvLAMqUnnQ79EAD");
+        w.accept("-----END PRIVATE KEY-----");
+        return buf.toString();
+    }
+
+    private static String getRemoteMessagingCertificateContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN CERTIFICATE-----");
+        w.accept("MIID7TCCAdWgAwIBAgIBBDANBgkqhkiG9w0BAQsFADAaMRgwFgYDVQQDDA9TcG9v");
+        w.accept("aGFwcHNUZXN0Q0EwHhcNMTgxMTAzMTczODQxWhcNMjgxMDMxMTczODQxWjApMRYw");
+        w.accept("FAYDVQQDDA1kZXZpY2Vjb250cm9sMQ8wDQYDVQQKDAZjbGllbnQwggEiMA0GCSqG");
+        w.accept("SIb3DQEBAQUAA4IBDwAwggEKAoIBAQDAsHFfNpQlNA32H0Iss68jwssY5qiQOjxv");
+        w.accept("K5QoymxLcOZnzTjhL4ugp9/kWSH0lnXvG/SOqcIU5/GazMBXVJZ9a7dW+Lj/743s");
+        w.accept("Ff9wL21H2v1KB1IbNwr7ZaIHgKqgZ5GS/rPH4WaGGAigK2bfWdFfCehunRWj3IPt");
+        w.accept("D8sZfoSexd+lwgM4rmM6QGBOBpiOKTSQh0wbMalPsdVjhVqdhYhNz4qZsc0QoSDE");
+        w.accept("iMYCn9qIDktHAHDtRUXeA2j9eX1psqxzjJT3NzZFSfa5Yc8vYV0WVAcPx8udEXlg");
+        w.accept("B8bmTS6jsU6xYogd5+O0Td0GttEhHYhh8gnwYYBluj1os2iLpuhhAgMBAAGjLzAt");
+        w.accept("MAkGA1UdEwQCMAAwCwYDVR0PBAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMCMA0G");
+        w.accept("CSqGSIb3DQEBCwUAA4ICAQB59RBO9WbDmJltWvLQ7a5+X+x8RSI3/9fB5qtnDItl");
+        w.accept("DZWodPXbidrPug4QPxG2wpwGIByMCOetdOkzq+wZ/3t3T7VlXggcDYQMN19znyF2");
+        w.accept("ZLQ+MUU+TCXwcmmk2H4P8PEZ8lphr+LRBnzyaDwfot/aKrZxjsA+lg+1gjySkw6o");
+        w.accept("zqb/fmvSHdIGXhqGN7emoy6BJcS7+1pZ0eHY0TcfFrQWQ+5s3Ip6Tgym471WV2eH");
+        w.accept("Z6jGMM5vLUuJa0IQToqGbscTOPa6SMhqm2gZ6F/RLL77BNCHyZnzwfCbdzR3AY6F");
+        w.accept("Fxp9Bch8ceGr1hQz/WNJcgkHe0cYqK1vrENtQGPG05fmWCPxip+rg49z824cdGSi");
+        w.accept("qEWH2CwYf0oumnPmLutMKzCSTSsv7dFdSpemu+Iih7bNRY898KVFZfcPisggpffW");
+        w.accept("4YY+fhElm7zEURCfB1WlNaXAjP3b32euNNlafkvA9sVnClmzfN8DUwKr9C8jQXuc");
+        w.accept("tAQl49Qf7y4ljchwIdz9YhEkEvXemNNWPa1a/28CGeUvFiga3ACKWEwwIU3fXwD3");
+        w.accept("Uh288GSU1ueySrsJogobo2aKE0jfApFCv+HT7HVpjbw+yBb6OtHo9r6zn+lKNWib");
+        w.accept("Km3TPg9yr9fU7jn6qQ34SrDZ1xnGgQwIofReqTG8vazFa+jW4zrEfFb4vNv94Uut");
+        w.accept("PQ==");
         w.accept("-----END CERTIFICATE-----");
         return buf.toString();
     }

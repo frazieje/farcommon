@@ -24,7 +24,7 @@ public class WhenWritingProfileToByteArrayTests {
         nodeContext.setPrivateKey(ProfileFileHelper.nodePrivateKey());
         nodeContext.setCertificate(ProfileFileHelper.nodeCertificate());
         nodeContext.setCaCertificate(ProfileFileHelper.nodeCaCertificate());
-        profile = Profile.from(expectedProfileId, nodeContext);
+        profile = Profile.from(expectedProfileId, nodeContext, null, null);
     }
 
     @Test

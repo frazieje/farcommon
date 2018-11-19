@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class WhenReadingRemoteProfileFromStreamTests {
+public class WhenReadingRemoteMessagingProfileFromStreamTests {
 
     Profile profile;
 
@@ -21,7 +21,7 @@ public class WhenReadingRemoteProfileFromStreamTests {
 
     @BeforeAll
     public void setup() {
-        profile = Profile.from(ProfileFileHelper.streamWithProfileIdNodeAndRemote(expectedProfileId));
+        profile = Profile.from(ProfileFileHelper.streamWithProfileIdNodeAndMessagingRemote(expectedProfileId));
     }
 
     @Test
@@ -45,21 +45,18 @@ public class WhenReadingRemoteProfileFromStreamTests {
     }
 
     @Test
-    public void shouldHaveTheCorrectApiCertificate() throws CertificateException {
-        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
-        assertArrayEquals(remote.getCertificate().getEncoded(), ProfileFileHelper.remoteCertificate().getEncoded());
+    public void shouldHaveTheCorrectRemoteCertificate() throws CertificateException {
+        assertArrayEquals(profile.getRemoteMessageContext().getCertificate().getEncoded(), ProfileFileHelper.remoteMessagingCertificate().getEncoded());
     }
 
     @Test
-    public void shouldHaveTheCorrectApiPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
-        assertArrayEquals(remote.getPrivateKey().getEncoded(), ProfileFileHelper.remotePrivateKey().getEncoded());
+    public void shouldHaveTheCorrectRemotePrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        assertArrayEquals(profile.getRemoteMessageContext().getPrivateKey().getEncoded(), ProfileFileHelper.remoteMessagingPrivateKey().getEncoded());
     }
 
     @Test
-    public void shouldHaveTheCorrectApiCaCertificate() throws CertificateException {
-        TLSContext remote = (TLSContext)profile.getRemoteContexts().toArray()[0];
-        assertArrayEquals(remote.getCaCertificate().getEncoded(), ProfileFileHelper.remoteCaCertificate().getEncoded());
+    public void shouldHaveTheCorrectRemoteCaCertificate() throws CertificateException {
+        assertArrayEquals(profile.getRemoteMessageContext().getCaCertificate().getEncoded(), ProfileFileHelper.remoteMessagingCaCertificate().getEncoded());
     }
 
     @Test
