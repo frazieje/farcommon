@@ -1,2 +1,2 @@
 # farcommon
-Common components for FAR devices
+Common components for FAR system
