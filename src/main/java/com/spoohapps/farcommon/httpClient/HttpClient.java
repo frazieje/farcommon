@@ -10,4 +10,6 @@ public interface HttpClient {
 
     HttpRequestBuilder prepareDelete(String url);
 
+    HttpRequestBuilder prepareHead(String url);
+
 }

@@ -34,5 +34,10 @@ public class GrizzlyHttpClient implements HttpClient {
         return new GrizzlyHttpRequestBuilder(client.prepareDelete(url));
     }
 
+    @Override
+    public HttpRequestBuilder prepareHead(String url) {
+        return new GrizzlyHttpRequestBuilder(client.prepareHead(url));
+    }
+
 
 }

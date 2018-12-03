@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class GrizzlyHttpResponse implements HttpResponse {
@@ -78,6 +79,11 @@ public class GrizzlyHttpResponse implements HttpResponse {
     @Override
     public List<String> getHeaders(String name) {
         return response.getHeaders(name);
+    }
+
+    @Override
+    public Map<String, List<String>> getHeaders() {
+        return response.getHeaders();
     }
 
     @Override

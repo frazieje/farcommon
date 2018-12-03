@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.util.List;
+import java.util.Map;
 
 public interface HttpResponse {
 
@@ -30,6 +31,8 @@ public interface HttpResponse {
     String getHeader(String name);
 
     List<String> getHeaders(String name);
+
+    Map<String, List<String>> getHeaders();
 
     boolean isRedirected();
 
