@@ -48,6 +48,8 @@ public interface HttpRequestBuilder {
 
      void execute(Consumer<HttpResponse> responseConsumer);
 
+     void execute(Consumer<HttpResponse> responseConsumer, Consumer<Throwable> throwableConsumer);
+
      Future<HttpResponse> execute();
 
 }

@@ -164,11 +164,22 @@ public class GrizzlyHttpRequestBuilder implements HttpRequestBuilder {
 
     @Override
     public void execute(final Consumer<HttpResponse> responseConsumer) {
+        execute(responseConsumer, null);
+    }
+
+    @Override
+    public void execute(final Consumer<HttpResponse> responseConsumer, Consumer<Throwable> throwableConsumer) {
         requestBuilder.execute(new AsyncCompletionHandler<Void>() {
             @Override
             public Void onCompleted(Response response) throws Exception {
                 responseConsumer.accept(new GrizzlyHttpResponse(response));
                 return null;
+            }
+            @Override
+            public void onThrowable(Throwable t) {
+                if (throwableConsumer != null) {
+                    throwableConsumer.accept(t);
+                }
             }
         });
     }
