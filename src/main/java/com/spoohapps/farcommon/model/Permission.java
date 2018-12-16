@@ -5,9 +5,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 @JsonTypeInfo(use=JsonTypeInfo.Id.NAME, property = "type")
 @JsonSubTypes({
-        @JsonSubTypes.Type(value = ReadProfilePermission.class, name = "readProfile"),
+        @JsonSubTypes.Type(value = ReadDevicePermission.class, name = "readDevice"),
 
-        @JsonSubTypes.Type(value = WriteProfilePermission.class, name = "writeProfile")
+        @JsonSubTypes.Type(value = WriteDevicePermission.class, name = "writeDevice")
 })
 public interface Permission {
 
