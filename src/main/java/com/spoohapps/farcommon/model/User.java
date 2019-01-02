@@ -1,5 +1,6 @@
 package com.spoohapps.farcommon.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.HashSet;
@@ -7,6 +8,7 @@ import java.util.Set;
 
 public class User {
 
+    @JsonProperty("_id")
     private String id;
 
     private String firstName;
@@ -14,7 +16,9 @@ public class User {
     private String password;
     private String email;
 
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
+    @JsonProperty("_rev")
+    private String revision;
+
     private boolean isAdmin;
 
     private Set<Permission> permissions = new HashSet<>();
@@ -67,11 +71,21 @@ public class User {
         this.permissions = permissions;
     }
 
+    @JsonIgnore
     public boolean isAdmin() {
         return isAdmin;
     }
 
+    @JsonIgnore
     public void setAdmin(boolean admin) {
         isAdmin = admin;
+    }
+
+    public String getRevision() {
+        return revision;
+    }
+
+    public void setRevision(String revision) {
+        this.revision = revision;
     }
 }
