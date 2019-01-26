@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.nio.file.*;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -90,8 +91,8 @@ public class FileBasedProfileManager implements ProfileManager {
     }
 
     private synchronized Profile getStoredProfile() {
-        try {
-            return Profile.from(Files.newInputStream(filePath));
+        try (InputStream fileStream = Files.newInputStream(filePath)){
+            return Profile.from(fileStream);
         } catch (Exception e) {
             logger.error("error reading profile file: " + e.getMessage());
         }

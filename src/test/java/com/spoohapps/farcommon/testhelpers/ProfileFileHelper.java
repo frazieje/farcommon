@@ -29,8 +29,8 @@ public class ProfileFileHelper {
     }
 
     public static Profile getFileContents(Path filePath) {
-        try {
-            return Profile.from(Files.newInputStream(filePath));
+        try (InputStream fileStream = Files.newInputStream(filePath)){
+            return Profile.from(fileStream);
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
