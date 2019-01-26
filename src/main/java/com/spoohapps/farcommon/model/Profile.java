@@ -77,8 +77,6 @@ public class Profile {
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Error reading profile: " + e.getMessage());
-        } finally {
-            try { profileStream.close(); } catch (Throwable ignore) {}
         }
 
         if (p.id != null

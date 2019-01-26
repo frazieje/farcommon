@@ -79,14 +79,6 @@ public class ConfigBuilder<T> {
         } catch (IOException ex) {
             ex.printStackTrace();
             return this;
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
         }
     }
 
