@@ -1,7 +1,6 @@
 package com.spoohapps.farcommon.internal;
 
 import com.spoohapps.farcommon.testhelpers.ProfileFileHelper;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 
