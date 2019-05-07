@@ -128,6 +128,18 @@ public class ProfileFileHelper {
         return TLSUtils.certificateFrom(getCaCertificateContents());
     }
 
+    public static X509Certificate serverCertificate() throws CertificateException {
+        return TLSUtils.certificateFrom(getServerCertificateContents());
+    }
+
+    public static X509Certificate serverCaCertificate() throws CertificateException {
+        return TLSUtils.certificateFrom(getServerCaCertificateContents());
+    }
+
+    public static RSAPrivateKey serverPrivateKey() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        return TLSUtils.privateKeyFrom(getServerPrivateKeyContents());
+    }
+
     private static String getProfileIdContents(String profileId) {
         StringBuilder buf = new StringBuilder();
         Consumer<String> w = getWriter(buf);
@@ -337,6 +349,103 @@ public class ProfileFileHelper {
         w.accept("Km3TPg9yr9fU7jn6qQ34SrDZ1xnGgQwIofReqTG8vazFa+jW4zrEfFb4vNv94Uut");
         w.accept("PQ==");
         w.accept("-----END CERTIFICATE-----");
+        return buf.toString();
+    }
+
+    private static String getServerCaCertificateContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN CERTIFICATE-----");
+        w.accept("MIIE1DCCArygAwIBAgIJAImh2ojUC0hNMA0GCSqGSIb3DQEBCwUAMBoxGDAWBgNV");
+        w.accept("BAMMD1Nwb29oYXBwc1Rlc3RDQTAeFw0xODA1MzAwNDMyMTJaFw0zODA1MjUwNDMy");
+        w.accept("MTJaMBoxGDAWBgNVBAMMD1Nwb29oYXBwc1Rlc3RDQTCCAiIwDQYJKoZIhvcNAQEB");
+        w.accept("BQADggIPADCCAgoCggIBAMyIP8toqBFamK76woF8golfVaPjq3qtrGAlbrHNsybP");
+        w.accept("XVZJ3EQLTFZI9pM2/+stuaWlO5fg7TDqCqRwUIiV8do4env9eQRvZa0zDPrLkG7E");
+        w.accept("y67KlFS7Mm+Vj5c2nuVgLlzxsELLhJfZlAdFlKguTjam6vpcVAIsWMfLnJVxFoVN");
+        w.accept("7fNgQNqTn/9U6OkfWjFzy22u9kwaQtdDC/kC3/lp77nVbZCnFwCS+dEaSnnqBLuX");
+        w.accept("DDcjCvnaZH/mMDQbMmslXqBcD0B4+9zqgbylijQPzFAxwmuSM78b7sA7ygDpX5X+");
+        w.accept("3SRy/XImjnm9ulOpnIdd32fcEPJXZFTYmP1mgNDr5y2BmXHanxx5qVQhKIKPz4KY");
+        w.accept("XnQ1vN+ENJiE4XvCjXl1XnwLHrEj9hap5cTsZR+9Y8gsM17QUFCFy5afD+XyNxRQ");
+        w.accept("WlPUibVCCJ9PE48QLVr+R2XAs+6rjfLMXA1TlR1t1D24a55lXMVwKafKf/YIHjI1");
+        w.accept("PD3mUGPppHATfsMX1mWcfWqCvN+mrlZ4+XCp52O9YT8RNC8WcVEd5xvIc7kZj58A");
+        w.accept("WkPfM/ia33mahbKv789lTOjtYzhohyHM4shJ6VfoL8JmsEq3JWK7xBGZBHYkPaDI");
+        w.accept("GR6L2UJlzBHj9SIqJOs3ONyVxSYSfN0HDC6OaSnmBXyq6hVo7HWjL+xXUGUrCBcZ");
+        w.accept("AgMBAAGjHTAbMAwGA1UdEwQFMAMBAf8wCwYDVR0PBAQDAgEGMA0GCSqGSIb3DQEB");
+        w.accept("CwUAA4ICAQBxrmK0XWaTeH0B5qsf5N8CVDy5+bebU5oiZBiOap7JtOWXlIGZhrxI");
+        w.accept("7PROnkuzk4KG84ea5gV4U+8NXp1zMgRqi9NaFBGtWFLUJ3vyOk4IfSfPTKGQhhT1");
+        w.accept("rFblQuqoBGU8dn6QgbMNlokmbq03SLC+4TsrbhMZBtZGMzoLRaO8nCTRgYdJK/Mt");
+        w.accept("kUuAKGLlhdGSzmDiUwYQcLlLguK46GZ6mY3tBqfRbam9xIuXiXyfdhsesTLAmz99");
+        w.accept("MKPJJiDuiYL4Y0KqdyRlKqpntEMVBIzoaQI61deLMBHu6LgTy+7UeiFY+UG/ehTB");
+        w.accept("JQPZUEnVYJnO6JHmGk029HFg0tPowfv9tM7/I9gZKaIfC3bVweLnH5HjBw9M+CuI");
+        w.accept("cuj1oX2MUTR3QCvZ6M7m4Ff945BdOEiA8n4ipRiz2JpjuMIGI+3JwbjqWT5ZAFoc");
+        w.accept("3tvFD4yScbRUDx3S7gH11ThOLouI7Jgl28Qm0/a8E3UmkjnWqnb4Itv/IY9BE1GI");
+        w.accept("d8+8R/mrlQ6qifUnn0WrSyh+Y1G7mOrNoZsvA0XR7twVNHr9hkfbgFJoD9xTsweK");
+        w.accept("GxWaosg++cYKX22IQDO6o7X8WM0FVuH3bZla4CssyJ3HVZptI2wtWMHMbyvhJxkx");
+        w.accept("Tjy2QViZVcY6O2frarkxPdSLhP2CrHn3QaVZnjvbhZ9+PXU6lUwyjQ==");
+        w.accept("-----END CERTIFICATE-----");
+        return buf.toString();
+    }
+
+    private static String getServerCertificateContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN CERTIFICATE-----");
+        w.accept("MIID6DCCAdCgAwIBAgIBATANBgkqhkiG9w0BAQsFADAaMRgwFgYDVQQDDA9TcG9v");
+        w.accept("aGFwcHNUZXN0Q0EwHhcNMTgwNTMwMDQzNjIzWhcNMjgwNTI3MDQzNjIzWjAkMREw");
+        w.accept("DwYDVQQDDAhlcGljdXJ1czEPMA0GA1UECgwGc2VydmVyMIIBIjANBgkqhkiG9w0B");
+        w.accept("AQEFAAOCAQ8AMIIBCgKCAQEAsu3u1z5N1Xs41MdSjA1b6F+dm/UoD82z+Mn8LU/2");
+        w.accept("UipEiC5Ld2yCXoqpxZ9afH+0OZOTH2Jkxada70VryHo3NSzwQ+jQh2Tt4mKH44wS");
+        w.accept("RFOWhT/OAmncpKoWo0GeLVjr6u1YxtzcNSJc2GMDmJa+uNQQ8B5Kg6cSThg6oFTS");
+        w.accept("Y/KB1cX6yLvev0XJWqOtBFKGAm8l7/xajVm1hhqMmddtvp4Lfrjl3RIUNZGw5tjf");
+        w.accept("TFrBLR9+8BbnLQhCo0Et5zkEz4RGrZu/GaOxcOTcy5apDZJ+vIY7syE7nXzQraSC");
+        w.accept("VnwYDYYDXkVRZ7V5iIUuuwr4KqJpXYOxVdFnLMPtr6xwUQIDAQABoy8wLTAJBgNV");
+        w.accept("HRMEAjAAMAsGA1UdDwQEAwIFoDATBgNVHSUEDDAKBggrBgEFBQcDATANBgkqhkiG");
+        w.accept("9w0BAQsFAAOCAgEAIWkd5vKE8ovITWoP/px533a2KRTkyztvWl/gyDNhGeymzjS+");
+        w.accept("38xeKFMD6wbGkCavwuWsjKIQVvS6wAN4PWXNLB0d1qA0eO90Mp6aeFmX9dbcItpc");
+        w.accept("OCO9X3pFPQHFyDTefc4NaMSIySkY8pDNg+ARhZcI+JdUnUEyvq7bjq058ngceTVV");
+        w.accept("m2h9lKmmZoMSPsPfaKz8bOTkKZbs51ini8sblB9UO/qN+ya9CCA3BAm8vtVMnkzM");
+        w.accept("IWRajQ6bW6JelTlnZ2x81tXMk8h0Oj71rS2agD4K82sYH0UvosEBYSPIDKJKhnH0");
+        w.accept("ElE7LAO8DRWN5g95ZG1rRVsNB0APCmZ2w0VVYFQsjHLZ61xsctP794ZRil5nKlkS");
+        w.accept("9+UozRZrl5oCLoFJT7xbKokOKmOVDPrv78SfsuBNw3lToeeM1zPQlZScU2nQiZCc");
+        w.accept("Ddhx3cOyOotk6CrbQfkppUBkWrkgwtjMsNo6AGpamVqyDgxVHh07yOP47PUTSnR3");
+        w.accept("pX+7gTzS7a7BTOOqhgccFigr7zd7E+MgXl1IY4tpqmK5l3HONRnSb4eqxNymlGt3");
+        w.accept("Q7sQYPR1LtLbVLhYT54sr3U7S67gJ1ov6NOTempbGE4vKv6Km8IUHR2iqnfi5ypj");
+        w.accept("SVoZCdgl/STZLk2+6X7OfmJNtK/v2nV6tpIxTArSx5MOD5CLrlWZK5lcmjY=");
+        w.accept("-----END CERTIFICATE-----");
+        return buf.toString();
+    }
+
+    private static String getServerPrivateKeyContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN PRIVATE KEY-----");
+        w.accept("MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCy7e7XPk3VezjU");
+        w.accept("x1KMDVvoX52b9SgPzbP4yfwtT/ZSKkSILkt3bIJeiqnFn1p8f7Q5k5MfYmTFp1rv");
+        w.accept("RWvIejc1LPBD6NCHZO3iYofjjBJEU5aFP84CadykqhajQZ4tWOvq7VjG3Nw1IlzY");
+        w.accept("YwOYlr641BDwHkqDpxJOGDqgVNJj8oHVxfrIu96/Rclao60EUoYCbyXv/FqNWbWG");
+        w.accept("GoyZ122+ngt+uOXdEhQ1kbDm2N9MWsEtH37wFuctCEKjQS3nOQTPhEatm78Zo7Fw");
+        w.accept("5NzLlqkNkn68hjuzITudfNCtpIJWfBgNhgNeRVFntXmIhS67Cvgqomldg7FV0Wcs");
+        w.accept("w+2vrHBRAgMBAAECggEAFzWf1pHBXOC39XnJbltJQbItao55XNts7eeda29E31GW");
+        w.accept("RCflKB+OJZ9M+FJ8VUvnX9SRr+9+bNkRhZn2qjGYObCTlet8KSPha40mXVDNCcnh");
+        w.accept("63TkTxHWShG6EAEx+GXhbD7PVjRN6CKF8pedXsym/qibbdowBjXEvRaNfECkbcxO");
+        w.accept("b7tmNb1RfMLt4ZI8KZOmrhzNxfDwdv0bYHNayDlurn3DjCRrvtAo2+mjDCLjYU7d");
+        w.accept("DFTd52KcQwVpminl0Ce/jJApeI0Jbhggq8bIXuo+SyO4X5Nd81ZWYtst/zE3LygW");
+        w.accept("JLPfxQ8AqSWuQStVLwE4RzOCLzCCYZAajv8Cvs+dsQKBgQDoMxLSpTP64cQyAAWb");
+        w.accept("FBlrBI41PaaCldGhAEQMYjAknzvqH6h/nhUhpQ0jdhXGj+rarq4mZu4k4KOgEVzf");
+        w.accept("lBPzPjoiYw1UkI2OWGGga5KjCPrOc/Dq4+qa3qKR+NDDwVrFWH85eGkO4CfXBNkd");
+        w.accept("rjM81S4+wFETJfU6/ezDDx4jNQKBgQDFRQzHMoMBOV8ue0mrEwKud7StCbR64uqS");
+        w.accept("iJYcIXunM4veCf4fnxXFe0W8VcBuWDXE+JaPTkVJpG0rLiOL2KdhmfifMg7p4lPw");
+        w.accept("NK+PMqztX4GwmxqOApwHykdiBN0wX15Li9wpuRZrLdVDoRslm6Gy1DXg/oFwgG5I");
+        w.accept("Vi63S6dALQKBgQC61aW2osFBhHm2dbgNAU42gzLd+h5KArzrXGhkwnjUbt/p0dFl");
+        w.accept("5lBAgysgNnrtC45Aqb9tHPNP7wUZ3f6p0999oLtsQeFPAwUz3T+osgYKc0ZD6pyW");
+        w.accept("lA+Iz81lwRxR9vnPwxaTqqR2GL1V0QvWSv3lW+9bBKn3y1oYPotMpJRuZQKBgGuW");
+        w.accept("mDx/6QEe6DFyniAGczzyHoENPPiUj7ixc6UOAeGT9GF587YNTpNxAvyPjC7iPxkZ");
+        w.accept("NwwbdSCP49ZcCJj55XgOwJEafRXEEWF9ao5f5f5kS1glj5sKA00gXkQwQO5j5Qqw");
+        w.accept("0beTsY1s5tZGpIajVdIxeN0oETJpaTxcfIgNY79VAoGABUN+yfyscgnFlJ9+/CLv");
+        w.accept("+BS9RKcYof1btEjO7J6vqPrVkE3qFwdU6iD3VItWTqsPvpW0S9E+D6c1LbNqaGp5");
+        w.accept("vLBhIh8v3R4yyv6UpA8zdvXqBdOUTU/dkwtjyBxYkIO5id1vWzwCRpR38kg3qtrk");
+        w.accept("sBAjrEUejYTq5D5CLxStHag=");
+        w.accept("-----END PRIVATE KEY-----");
         return buf.toString();
     }
 
