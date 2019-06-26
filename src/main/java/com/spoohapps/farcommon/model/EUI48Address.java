@@ -1,20 +1,20 @@
 package com.spoohapps.farcommon.model;
 
 
-import com.spoohapps.farcommon.util.BTAddressValidator;
-import com.spoohapps.farcommon.util.BTAddressValidatorImpl;
+import com.spoohapps.farcommon.util.EUI48AddressValidator;
+import com.spoohapps.farcommon.util.EUI48AddressValidatorImpl;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
 
-public class BTAddress implements Serializable {
+public class EUI48Address implements Serializable {
 
-    private transient BTAddressValidator btAddressValidator = new BTAddressValidatorImpl();
+    private transient EUI48AddressValidator eui48AddressValidator = new EUI48AddressValidatorImpl();
 
-    public BTAddress() {}
+    public EUI48Address() {}
 
-    public BTAddress(String address) {
+    public EUI48Address(String address) {
 
         String addressStr = address.trim();
         String nameStr = null;
@@ -25,23 +25,23 @@ public class BTAddress implements Serializable {
             nameStr = address.substring(index + 1);
         }
 
-        if (!btAddressValidator.validate(addressStr))
-            throw new IllegalArgumentException("Not a valid Bluetooth address.");
+        if (!eui48AddressValidator.validate(addressStr))
+            throw new IllegalArgumentException("Not a valid EUI-48 address.");
 
         data = hexStringToByteArray(addressStr);
         name = nameStr;
     }
 
-    public BTAddress(byte[] data) {
+    public EUI48Address(byte[] data) {
         this.data = data;
     }
 
-    public BTAddress(byte[] data, String name) {
+    public EUI48Address(byte[] data, String name) {
         this(data);
         this.name = name;
     }
 
-    public BTAddress(String address, String name) {
+    public EUI48Address(String address, String name) {
         this(address + " " + name);
     }
 
@@ -74,7 +74,7 @@ public class BTAddress implements Serializable {
         return new String(hexChars);
     }
 
-    public static BTAddress random() {
+    public static EUI48Address random() {
         Random random = new Random();
         String[] chars = new String[] { "A", "B", "C", "D", "E", "F" };
 
@@ -92,7 +92,7 @@ public class BTAddress implements Serializable {
             }
         }
 
-        return new BTAddress(address);
+        return new EUI48Address(address);
     }
 
     public String getName() {
@@ -123,7 +123,7 @@ public class BTAddress implements Serializable {
 
     @Override
     public boolean equals(Object other) {
-        BTAddress otherAddress = (BTAddress)other;
+        EUI48Address otherAddress = (EUI48Address)other;
         if (other == null)
             return false;
 

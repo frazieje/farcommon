@@ -1,26 +1,14 @@
-apply plugin: 'com.jfrog.artifactory'
-apply plugin: 'maven-publish'
-apply plugin: 'org.junit.platform.gradle.plugin'
+plugins {
+    id 'java'
+    id 'maven-publish'
+    id 'com.jfrog.artifactory' version '4.9.7'
+}
+
+group 'com.spoohapps'
+
+version '0.6.0'
 
 sourceCompatibility = 1.8
-
-def libraryGroupId = 'com.spoohapps'
-def libraryArtifactId = 'farcommon'
-def libraryVersion = '0.5.7'
-
-group = libraryGroupId
-version = libraryVersion
-
-buildscript {
-    repositories {
-        mavenCentral()
-        jcenter()
-    }
-    dependencies {
-        classpath 'org.junit.platform:junit-platform-gradle-plugin:1.1.0'
-        classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:latest.release'
-    }
-}
 
 repositories {
     mavenCentral()
@@ -38,22 +26,28 @@ jar {
 }
 
 dependencies {
+    
     compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.25'
 
-    compile 'com.rabbitmq:amqp-client:5.2.0'
+    compile group: 'com.rabbitmq', name: 'amqp-client', version: '5.2.0'
 
-    compile 'org.glassfish.grizzly:grizzly-http-client:1.15'
+    compile group: 'org.glassfish.grizzly', name: 'grizzly-http-client', version: '1.15'
 
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-annotations', version: '2.9.6'
 
-    testCompile("junit:junit:4.12")
-    testCompile("org.junit.jupiter:junit-jupiter-api:5.0.2")
-    testCompile("com.squareup.okhttp3:mockwebserver:+")
-    testCompile "org.mockito:mockito-core:2.+"
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    
+    testCompile group: 'org.junit.jupiter', name: 'junit-jupiter-api', version: '5.0.2'
+    
+    testCompile group: 'com.squareup.okhttp3', name: 'mockwebserver', version: '3.14.2'
+    
+    testCompile group: 'org.mockito', name: 'mockito-core', version: '2.28.2'
 
-    testRuntime("org.junit.platform:junit-platform-launcher:1.0.2")
-    testRuntime("org.junit.jupiter:junit-jupiter-engine:5.0.2")
-    testRuntime("org.junit.vintage:junit-vintage-engine:4.12.2")
+    testRuntime group: 'org.junit.platform', name: 'junit-platform-launcher', version: '1.0.2'
+
+    testRuntime group: 'org.junit.jupiter', name: 'junit-jupiter-engine', version: '5.0.2'
+    
+    testRuntime group: 'org.junit.vintage', name: 'junit-vintage-engine', version: '4.12.2'
 }
 
 publishing {
@@ -65,17 +59,20 @@ publishing {
 }
 
 artifactory {
-    contextUrl = 'https://www.spoohapps.com/artifactory'
     publish {
+        contextUrl = 'https://www.spoohapps.com/artifactory'
         repository {
-            repoKey = 'libs-release-local'
+            repoKey = "libs-release-local"
             username = artifactory_username
             password = artifactory_password
         }
         defaults {
             publications('farcommon')
-            publishArtifacts = true
-            publishPom = true
         }
     }
+}
+
+compileJava {
+    options.compilerArgs << '-XDenableSunApiLintControl'
+    options.compilerArgs << '-Xlint:sunapi'
 }

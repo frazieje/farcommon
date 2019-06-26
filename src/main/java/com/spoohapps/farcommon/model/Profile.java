@@ -175,7 +175,7 @@ public class Profile {
         if (id.length() != PROFILE_ID_LENGTH)
             throw new IllegalArgumentException("Profile id should be " + PROFILE_ID_LENGTH + " characters long.");
         for (int i = 0; i < id.length(); i++) {
-            if (!hexString.contains(id.substring(i, i+1))) {
+            if (!profileHexString.contains(id.substring(i, i+1))) {
                 throw new IllegalArgumentException("Improper profile format: profile must only contain characters 0-9 and a-f");
             }
         }
@@ -354,7 +354,7 @@ public class Profile {
         return remoteAuthContext;
     }
 
-    private final static String hexString = "0123456789abcdef";
+    private final static String profileHexString = "0123456789abcdefghijklmnopqrstuv";
 
     private static final String profileIdStartDelimiter = "-----BEGIN PROFILE IDENTIFIER-----";
     private static final String profileIdEndDelimiter = "-----END PROFILE IDENTIFIER-----";

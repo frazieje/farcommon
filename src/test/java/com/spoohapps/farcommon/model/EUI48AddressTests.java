@@ -3,14 +3,14 @@ package com.spoohapps.farcommon.model;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-public class BTAddressTests {
+public class EUI48AddressTests {
 
     @Test
     public void shouldConstructFromValidAddressString() {
 
         String addressString = "78:4f:43:62:6f:58";
 
-        BTAddress address = new BTAddress(addressString);
+        EUI48Address address = new EUI48Address(addressString);
 
         assertEquals(address.toString().toLowerCase(), addressString);
 
@@ -21,7 +21,7 @@ public class BTAddressTests {
 
         String addressString = "78-4f-43-62-6f-58";
 
-        BTAddress address = new BTAddress(addressString);
+        EUI48Address address = new EUI48Address(addressString);
 
         assertNotNull(address);
     }
@@ -31,7 +31,7 @@ public class BTAddressTests {
 
         String addressString = "784f43626f58";
 
-        BTAddress address = new BTAddress(addressString);
+        EUI48Address address = new EUI48Address(addressString);
 
         assertEquals("78:4F:43:62:6F:58", address.toString());
     }
@@ -42,7 +42,7 @@ public class BTAddressTests {
         String addressString = "78:4f:43:62:6fz58";
 
         assertThrows(IllegalArgumentException.class, () -> {
-            BTAddress address = new BTAddress(addressString);
+            EUI48Address address = new EUI48Address(addressString);
         });
 
     }
@@ -52,7 +52,7 @@ public class BTAddressTests {
 
         String addressString = "78:4f:43:62:6f:58";
 
-        BTAddress address = new BTAddress(new byte[] { 120,79,67,98,111,88 });
+        EUI48Address address = new EUI48Address(new byte[] { 120,79,67,98,111,88 });
 
         assertEquals(address.toString().toLowerCase(), addressString);
 
@@ -64,7 +64,7 @@ public class BTAddressTests {
         String addressString = "78:4f:43:62:6f:58";
 
         String expectedName = "testName";
-        BTAddress address = new BTAddress(new byte[] { 120,79,67,98,111,88 }, expectedName);
+        EUI48Address address = new EUI48Address(new byte[] { 120,79,67,98,111,88 }, expectedName);
 
         assertTrue(
                 address.toString().toLowerCase().equals(addressString + " " + expectedName.toLowerCase())
@@ -79,7 +79,7 @@ public class BTAddressTests {
         String expectedName = "testName";
         String addressString = "78:4f:43:62:6f:58";
 
-        BTAddress address = new BTAddress(addressString + " " + expectedName);
+        EUI48Address address = new EUI48Address(addressString + " " + expectedName);
 
         assertTrue(
                 address.toString().toLowerCase().equals(addressString + " " + expectedName.toLowerCase())

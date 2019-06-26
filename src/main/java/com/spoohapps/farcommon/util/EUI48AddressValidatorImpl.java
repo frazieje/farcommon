@@ -2,7 +2,7 @@ package com.spoohapps.farcommon.util;
 
 import java.util.regex.Pattern;
 
-public class BTAddressValidatorImpl implements BTAddressValidator {
+public class EUI48AddressValidatorImpl implements EUI48AddressValidator {
 
 	@Override
 	public boolean validate(String address) {

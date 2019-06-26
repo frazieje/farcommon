@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class TestServerCertificateTestHelper {
 
     // see https://docs.oracle.com/javase/8/docs/api/java/security/cert/X509Certificate.html#getKeyUsage--
+
     private static final int KEY_USAGE_CERT_SIGING = 5;
 
     private static final String TLS_WEB_SERVER_AUTHENTICATION = "1.3.6.1.5.5.7.3.1";
