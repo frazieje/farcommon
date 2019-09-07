@@ -7,4 +7,7 @@ public interface ManagerSettings {
     TimeUnit startDelayTimeUnit();
     long timeout();
     TimeUnit timeoutTimeUnit();
+    default float backoffScale() {
+        return 1.0f;
+    }
 }
