@@ -4,7 +4,7 @@ import java.nio.ByteBuffer;
 
 public class HexUtils {
 
-    private static final char[] HEX_ARRAY = "0123456789ABCDEF".toCharArray();
+    private static final char[] HEX_ARRAY = "0123456789abcdef".toCharArray();
 
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];
@@ -17,7 +17,15 @@ public class HexUtils {
     }
 
     public static String intToHex(int value) {
-        return bytesToHex(ByteBuffer.allocate(4).putInt(value).array());
+        return intToHex(value, false);
+    }
+
+    public static String intToHex(int value, boolean leadingZeros) {
+        String s = bytesToHex(ByteBuffer.allocate(4).putInt(value).array());
+        if (leadingZeros) {
+            return s;
+        }
+        return s.replaceAll("^0+", "");
     }
 
 }

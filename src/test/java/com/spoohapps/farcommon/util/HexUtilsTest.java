@@ -9,8 +9,13 @@ import static org.junit.jupiter.api.Assertions.*;
 public class HexUtilsTest {
 
     @Test
-    public void shouldConvertByteArrayToHexString() {
-        assertEquals("0000004f", HexUtils.intToHex(79));
+    public void shouldConvertByteArrayToHexStringAndDefaultToTrimLeadingZeroes() {
+        assertEquals("4f", HexUtils.intToHex(79));
+    }
+
+    @Test
+    public void shouldConvertByteArrayToHexStringAndNotTrimLeadingZeroes() {
+        assertEquals("0000004f", HexUtils.intToHex(79, true));
     }
 
 }
