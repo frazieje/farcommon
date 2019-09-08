@@ -1,5 +1,7 @@
 package com.spoohapps.farcommon.model;
 
+import com.spoohapps.farcommon.util.TLSUtils;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateEncodingException;
@@ -11,7 +13,7 @@ import java.util.stream.Stream;
 
 public class Profile {
 
-    private static final int PROFILE_ID_LENGTH = 8;
+    static final int PROFILE_ID_LENGTH = 8;
 
     private String id;
 
@@ -354,7 +356,7 @@ public class Profile {
         return remoteAuthContext;
     }
 
-    private final static String profileHexString = "0123456789abcdefghijklmnopqrstuv";
+    final static String profileHexString = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     private static final String profileIdStartDelimiter = "-----BEGIN PROFILE IDENTIFIER-----";
     private static final String profileIdEndDelimiter = "-----END PROFILE IDENTIFIER-----";
@@ -374,10 +376,10 @@ public class Profile {
     private static final String caCertStartDelimiter = "-----BEGIN CA CERT-----";
     private static final String caCertEndDelimiter = "-----END CA CERT-----";
 
-    private static final String privateKeyStartDelimiter = "-----BEGIN PRIVATE KEY-----";
-    private static final String privateKeyEndDelimiter = "-----END PRIVATE KEY-----";
-    private static final String certificateStartDelimiter = "-----BEGIN CERTIFICATE-----";
-    private static final String certificateEndDelimiter = "-----END CERTIFICATE-----";
+    private static final String privateKeyStartDelimiter = TLSUtils.beginPrivateKey;
+    private static final String privateKeyEndDelimiter = TLSUtils.endPrivateKey;
+    private static final String certificateStartDelimiter = TLSUtils.beginCertificate;
+    private static final String certificateEndDelimiter = TLSUtils.endCertificate;
 
     private Map<String, Map.Entry<String, Consumer<String>>> sectionDelimiters =
             Collections.unmodifiableMap(Stream.of(

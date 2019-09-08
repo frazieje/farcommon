@@ -90,6 +90,26 @@ public class TLSContext {
         }
     }
 
+    public byte[] getCertificatePem() throws TLSContextException {
+        try {
+            return TLSUtils.toPem(certificate);
+        } catch (CertificateEncodingException e) {
+            throw new TLSContextException(e);
+        }
+    }
+
+    public byte[] getCaCertificatePem() throws TLSContextException {
+        try {
+            return TLSUtils.toPem(caCertificate);
+        } catch (CertificateEncodingException e) {
+            throw new TLSContextException(e);
+        }
+    }
+
+    public byte[] getPrivateKeyPem() throws TLSContextException {
+        return TLSUtils.toPem(privateKey);
+    }
+
     public boolean hasValue() {
         return certificate != null && privateKey != null && caCertificate != null;
     }
