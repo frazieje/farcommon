@@ -81,8 +81,3 @@ artifactory {
         }
     }
 }
-
-compileJava {
-    options.compilerArgs << '-XDenableSunApiLintControl'
-    options.compilerArgs << '-Xlint:sunapi'
-}

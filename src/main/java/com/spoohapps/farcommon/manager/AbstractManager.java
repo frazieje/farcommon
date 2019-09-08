@@ -15,7 +15,9 @@ public abstract class AbstractManager<T> implements Manager<T> {
 
     private final AtomicBoolean isStopped = new AtomicBoolean(false);
 
-    private final int[] backoffMultipliers = { 1, 2, 4, 8, 16, 32 };
+    private final int[] backoffMultipliers;
+
+    private final boolean backoffEnabled;
 
     private int backoff = 0;
 
@@ -35,7 +37,9 @@ public abstract class AbstractManager<T> implements Manager<T> {
         this.timeoutTimeUnit = managerSettings.timeoutTimeUnit();
         this.startDelay = managerSettings.startDelay();
         this.startDelayTimeUnit = managerSettings.startDelayTimeUnit();
+        this.backoffEnabled = managerSettings.backoffEnabled();
         this.backoffScale = managerSettings.backoffScale();
+        this.backoffMultipliers = managerSettings.backoffMultipliers();
     }
 
     @Override
@@ -57,17 +61,21 @@ public abstract class AbstractManager<T> implements Manager<T> {
         if (!isStopped.get()) {
             try {
                 doProcess();
-                if (backoff > 0) {
+                if (backoffEnabled && (backoff > 0)) {
                     backoff = 0;
                 }
             } catch (Exception e) {
                 logger.error("error processing", e);
-                if (backoff != (backoffMultipliers.length - 1)) {
+                if (backoffEnabled && (backoff != (backoffMultipliers.length - 1))) {
                     backoff++;
                 }
             }
             if (timeout > 0) {
-                scheduleTask((long) (timeout * (backoffMultipliers[backoff] * (backoff != 0 ? backoffScale : 1))), timeoutTimeUnit);
+                if (backoffEnabled) {
+                    scheduleTask((long) (timeout * (backoffMultipliers[backoff] * (backoff != 0 ? backoffScale : 1))), timeoutTimeUnit);
+                } else {
+                    scheduleTask(timeout, timeoutTimeUnit);
+                }
             }
         }
     }
