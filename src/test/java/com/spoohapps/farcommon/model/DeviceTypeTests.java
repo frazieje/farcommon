@@ -1,5 +1,7 @@
 package com.spoohapps.farcommon.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,6 +20,11 @@ public class DeviceTypeTests {
         assertEquals("4f", DeviceType.door_lock.asString());
     }
 
+    private Stream<Arguments> deviceTypeCombinations() {
+        return Stream.of(
+                Arguments.of(DeviceType.door_lock, "4f"),
+                Arguments.of(DeviceType.window_shade, "6b"));
+    }
     @ParameterizedTest
     @MethodSource("deviceTypeCombinations")
     public void shouldResolveDeviceTypeFromString(DeviceType expectedDeviceType, String inputHexString) {
@@ -29,10 +36,13 @@ public class DeviceTypeTests {
         assertEquals(DeviceType.door_lock, DeviceType.fromString("ffff"));
     }
 
+    @Test
+    public void shouldSerializeToJson() throws JsonProcessingException {
 
-    private Stream<Arguments> deviceTypeCombinations() {
-        return Stream.of(
-                Arguments.of(DeviceType.door_lock, "4f"),
-                Arguments.of(DeviceType.window_shade, "6b"));
+        ObjectMapper mapper = new ObjectMapper();
+
+        assertEquals("\"door_lock\"", mapper.writeValueAsString(DeviceType.door_lock));
+
     }
+
 }
