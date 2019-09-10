@@ -1,13 +1,12 @@
 package com.spoohapps.farcommon.util;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-import java.util.Map;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -41,6 +40,8 @@ public class HexUtilsTest {
         return Stream.of(
                 Arguments.of(79, "4f"),
                 Arguments.of(65535, "ffff"),
-                Arguments.of(255, "ff"));
+                Arguments.of(255, "ff"),
+                Arguments.of(134, "86"),
+                Arguments.of(107, "6b"));
     }
 }

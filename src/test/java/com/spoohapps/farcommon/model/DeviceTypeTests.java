@@ -2,7 +2,7 @@ package com.spoohapps.farcommon.model;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -31,9 +31,9 @@ public class DeviceTypeTests {
         assertEquals(expectedDeviceType, DeviceType.fromString(inputHexString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void shouldThrowForUnknownDeviceType() {
-        assertEquals(DeviceType.door_lock, DeviceType.fromString("ffff"));
+        assertThrows(IllegalArgumentException.class, () -> DeviceType.fromString("ffff"));
     }
 
     @Test
