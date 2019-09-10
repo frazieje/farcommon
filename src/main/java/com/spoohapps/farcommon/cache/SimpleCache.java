@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -58,6 +60,114 @@ public class SimpleCache<T> implements Cache<T> {
     }
 
     @Override
+    public CompletableFuture<T> getListItem(String listKey, long index) {
+        logger.debug("Cache GET LIST ITEM: {}, at index {}", listKey, index);
+        return cacheAdapter.getListItem(keyPrefix + listKey, index)
+                .thenApply(this::processGetResult)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setListItem(String listKey, long index, T item) {
+        logger.debug("Cache SET LIST ITEM: {}, at index {}", listKey, index);
+        String json = serialize(item);
+        if (json == null) {
+            return CompletableFuture.completedFuture(false);
+        } else {
+            return cacheAdapter.setListItem(keyPrefix + listKey, index, json)
+                    .exceptionally(t -> null);
+        }
+    }
+
+    @Override
+    public CompletableFuture<Long> listPush(String listKey, List<T> items) {
+        logger.debug("Cache LIST PUSH {}, {} items", listKey, items.size());
+        List<String> itemJsons = serialize(items);
+        if (itemJsons == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return cacheAdapter.listPush(keyPrefix + listKey, itemJsons)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Long> listPush(String listKey, T item) {
+        logger.debug("Cache LIST PUSH {}, one item", listKey);
+        String itemJson = serialize(item);
+        if (itemJson == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return cacheAdapter.listPush(keyPrefix + listKey, itemJson)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<T> listPop(String listKey) {
+        logger.debug("Cache LIST POP {}", listKey);
+        return cacheAdapter.listPop(keyPrefix + listKey)
+                .thenApply(this::processGetResult)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Long> getListSize(String listKey) {
+        return cacheAdapter.getListSize(keyPrefix + listKey)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trimList(String listKey, long start, long stopInclusive) {
+        logger.debug("Cache LIST TRIM {}, keeping from index {} through {}", listKey, start, stopInclusive);
+        return cacheAdapter.trimList(keyPrefix + listKey, start, stopInclusive)
+                .exceptionally(t -> false);
+    }
+
+    @Override
+    public CompletableFuture<List<T>> getListRange(String listKey, long start, long stopInclusive) {
+        logger.debug("Cache LIST GET RANGE {}, from index {} through {}", listKey, start, stopInclusive);
+        return cacheAdapter.getListRange(keyPrefix + listKey, start, stopInclusive)
+                .thenApply(l -> l.stream().map(this::processGetResult).collect(Collectors.toList()))
+                .exceptionally(t -> new ArrayList<>());
+    }
+
+    @Override
+    public CompletableFuture<Long> removeListItem(String listKey, T item) {
+        logger.debug("Cache LIST REMOVE ITEM {}", listKey);
+        return cacheAdapter.removeListItem(keyPrefix + listKey, serialize(item))
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Long> listPushTail(String listKey, List<T> items) {
+        logger.debug("Cache LIST PUSH TAIL {}, pushing {} items", listKey, items.size());
+        List<String> itemJsons = serialize(items);
+        if (itemJsons == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return cacheAdapter.listPushTail(keyPrefix + listKey, itemJsons)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<Long> listPushTail(String listKey, T item) {
+        logger.debug("Cache LIST PUSH TAIL {}, pushing one item", listKey);
+        String itemJson = serialize(item);
+        if (itemJson == null) {
+            return CompletableFuture.completedFuture(null);
+        }
+        return cacheAdapter.listPushTail(keyPrefix + listKey, itemJson)
+                .exceptionally(t -> null);
+    }
+
+    @Override
+    public CompletableFuture<T> listPopTail(String listKey) {
+        logger.debug("Cache LIST POP TAIL {}", listKey);
+        return cacheAdapter.listPopTail(keyPrefix + listKey)
+                .thenApply(this::processGetResult)
+                .exceptionally(t -> null);
+    }
+
+    @Override
     public CompletableFuture<Boolean> remove(String keyToRemove) {
         logger.debug("Cache REMOVE key: {}, cache type: {}", keyToRemove, clazz.getSimpleName());
         return cacheAdapter.remove(keyPrefix + keyToRemove);
@@ -83,6 +193,12 @@ public class SimpleCache<T> implements Cache<T> {
         logger.debug("Cache HASH GET hashKey: {}, cache type: {}", hashKey, clazz.getSimpleName());
         return cacheAdapter.getHash(keyPrefix + hashKey)
                 .thenApply(this::processHashResult);
+    }
+
+    @Override
+    public CompletableFuture<Long> getHashSize(String hashKey) {
+        logger.debug("Cache HASH SIZE GET hashKey: {}", hashKey);
+        return cacheAdapter.getHashSize(keyPrefix + hashKey);
     }
 
     @Override
@@ -116,6 +232,24 @@ public class SimpleCache<T> implements Cache<T> {
         } catch (JsonProcessingException e) {
             logger.debug("error during serialization", e);
             return null;
+        }
+    }
+
+    private List<String> serialize(List<T> objects) {
+        List<String> result = new ArrayList<>();
+        try {
+            for (T item : objects) {
+                String json = serialize(item);
+                if (json != null) {
+                    result.add(json);
+                } else {
+                    throw new IllegalArgumentException();
+                }
+            }
+            return result;
+        } catch (Exception e) {
+            logger.debug("Error during serialization", e);
+            return new ArrayList<>();
         }
     }
 

@@ -52,6 +52,80 @@ public class RedisCacheAdapter implements CacheAdapter {
     }
 
     @Override
+    public CompletableFuture<String> getListItem(String listKey, long index) {
+        return redisAsyncCommands.lindex(listKey, index)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Boolean> setListItem(String listKey, long index, String item) {
+        return redisAsyncCommands.lset(listKey, index, item)
+                .thenApply(this::parseResponse)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> listPush(String listKey, List<String> items) {
+        return redisAsyncCommands.lpush(listKey, items.toArray(new String[0]))
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> listPush(String listKey, String item) {
+        return redisAsyncCommands.lpush(listKey, item)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<String> listPop(String listKey) {
+        return redisAsyncCommands.lpop(listKey)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> getListSize(String listKey) {
+        return redisAsyncCommands.llen(listKey)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Boolean> trimList(String listKey, long start, long stopInclusive) {
+        return redisAsyncCommands.ltrim(listKey, start, stopInclusive)
+                .thenApply(this::parseResponse)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<List<String>> getListRange(String listKey, long start, long stopInclusive) {
+        return redisAsyncCommands.lrange(listKey, start, stopInclusive)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> removeListItem(String listKey, String itemValue) {
+        return redisAsyncCommands.lrem(listKey, 0, itemValue)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> listPushTail(String listKey, List<String> items) {
+        return redisAsyncCommands.rpush(listKey, items.toArray(new String[0]))
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> listPushTail(String listKey, String item) {
+        return redisAsyncCommands.rpush(listKey, item)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<String> listPopTail(String listKey) {
+        return redisAsyncCommands.rpop(listKey)
+                .toCompletableFuture();
+    }
+
+    @Override
     public CompletableFuture<Map<String, String>> getStartingWith(String match) {
         return getKeys(new HashSet<>(), redisAsyncCommands.scan(ScanArgs.Builder.matches(match + "*")).toCompletableFuture(), match)
                 .thenApply(keyValues -> {
@@ -78,6 +152,12 @@ public class RedisCacheAdapter implements CacheAdapter {
     @Override
     public CompletableFuture<Map<String, String>> getHash(String key) {
         return redisAsyncCommands.hgetall(key)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Long> getHashSize(String hashKey) {
+        return redisAsyncCommands.hlen(hashKey)
                 .toCompletableFuture();
     }
 
