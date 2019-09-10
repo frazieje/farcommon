@@ -1,5 +1,6 @@
 package com.spoohapps.farcommon.model;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -17,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@Disabled
 public class CertificateGenerationTests {
 
     private TLSContextGenerator generator;
