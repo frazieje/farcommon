@@ -11,9 +11,9 @@ public class RandomProfileGenerator implements ProfileGenerator {
 
         StringBuilder sb = new StringBuilder();
 
-        for (int i = 0; i < Profile.PROFILE_ID_LENGTH; i++) {
+        for (int i = 0; i < Profile.profileIdLength; i++) {
 
-            sb.append(Profile.profileHexString.charAt(random.nextInt(Profile.profileHexString.length())));
+            sb.append(Profile.profileIdCharacterString.charAt(random.nextInt(Profile.profileIdCharacterString.length())));
 
         }
 

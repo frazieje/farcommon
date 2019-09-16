@@ -13,7 +13,7 @@ import java.util.stream.Stream;
 
 public class Profile {
 
-    static final int PROFILE_ID_LENGTH = 8;
+    public static final int profileIdLength = 8;
 
     private String id;
 
@@ -173,11 +173,11 @@ public class Profile {
         id = lower;
     }
 
-    static void verifyProfileId(String id) {
-        if (id.length() != PROFILE_ID_LENGTH)
-            throw new IllegalArgumentException("Profile id should be " + PROFILE_ID_LENGTH + " characters long.");
+    public static void verifyProfileId(String id) {
+        if (id.length() != profileIdLength)
+            throw new IllegalArgumentException("Profile id should be " + profileIdLength + " characters long.");
         for (int i = 0; i < id.length(); i++) {
-            if (!profileHexString.contains(id.substring(i, i+1))) {
+            if (!profileIdCharacterString.contains(id.substring(i, i+1))) {
                 throw new IllegalArgumentException("Improper profile format: profile must only contain characters 0-9 and a-f");
             }
         }
@@ -356,7 +356,7 @@ public class Profile {
         return remoteAuthContext;
     }
 
-    final static String profileHexString = "0123456789abcdefghijklmnopqrstuvwxyz";
+    public final static String profileIdCharacterString = "0123456789abcdefghijklmnopqrstuvwxyz";
 
     private static final String profileIdStartDelimiter = "-----BEGIN PROFILE IDENTIFIER-----";
     private static final String profileIdEndDelimiter = "-----END PROFILE IDENTIFIER-----";
