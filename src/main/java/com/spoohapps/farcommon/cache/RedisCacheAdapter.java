@@ -174,6 +174,13 @@ public class RedisCacheAdapter implements CacheAdapter {
     }
 
     @Override
+    public CompletableFuture<Boolean> putHashItems(String hashKey, Map<String, String> items) {
+        return redisAsyncCommands.hmset(hashKey, items)
+                .thenApply(this::parseResponse)
+                .toCompletableFuture();
+    }
+
+    @Override
     public CompletableFuture<Boolean> removeHashItem(String hashKey, String itemKey) {
         return redisAsyncCommands.hdel(hashKey, itemKey)
                 .thenApply(this::parseResponse)

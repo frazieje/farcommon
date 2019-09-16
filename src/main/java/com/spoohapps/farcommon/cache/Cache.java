@@ -16,6 +16,8 @@ public interface Cache<T> {
 
     CompletableFuture<Boolean> putHashItem(String hashKey, String itemKey, T itemValue);
 
+    CompletableFuture<Boolean> putHashItems(String hashKey, Map<String, T> items);
+
     CompletableFuture<Boolean> removeHashItem(String hashKey, String itemKey);
 
     CompletableFuture<Boolean> removeHash(String hashKey);

@@ -208,6 +208,17 @@ public class SimpleCache<T> implements Cache<T> {
     }
 
     @Override
+    public CompletableFuture<Boolean> putHashItems(String hashKey, Map<String, T> items) {
+        logger.debug("Cache HASH ITEMS PUT hashKey: {}, item count: {}", hashKey, items.size());
+        return cacheAdapter.putHashItems(keyPrefix + hashKey,
+                items.entrySet().stream()
+                        .collect(Collectors.toMap(Map.Entry::getKey, e -> {
+                            String value = serialize(e.getValue());
+                            return value != null ? value : "";
+                        })));
+    }
+
+    @Override
     public CompletableFuture<Boolean> removeHashItem(String hashKey, String itemKey) {
         logger.debug("Cache HASH ITEM REMOVE hashKey: {}, itemKey: {}, cache type: {}", hashKey, itemKey, clazz.getSimpleName());
         return cacheAdapter.removeHashItem(keyPrefix + hashKey, itemKey);

@@ -16,6 +16,8 @@ public interface CacheAdapter {
 
     CompletableFuture<Boolean> putHashItem(String hashKey, String itemKey, String itemValue);
 
+    CompletableFuture<Boolean> putHashItems(String hashKey, Map<String, String> items);
+
     CompletableFuture<Boolean> removeHashItem(String hashKey, String itemKey);
 
     CompletableFuture<Boolean> put(String key, String item);
