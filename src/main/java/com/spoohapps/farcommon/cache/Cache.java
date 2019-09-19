@@ -10,6 +10,10 @@ public interface Cache<T> {
 
     CompletableFuture<T> getHashItem(String hashKey, String itemKey);
 
+    CompletableFuture<Boolean> exists(String key);
+
+    CompletableFuture<Boolean> hashItemExists(String hashKey, String itemKey);
+
     CompletableFuture<Map<String, T>> getHash(String hashKey);
 
     CompletableFuture<Long> getHashSize(String hashKey);

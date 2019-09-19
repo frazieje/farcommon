@@ -8,6 +8,10 @@ public interface CacheAdapter {
 
     CompletableFuture<String> get(String key);
 
+    CompletableFuture<Boolean> exists(String key);
+
+    CompletableFuture<Boolean> hashItemExists(String hashKey, String itemKey);
+
     CompletableFuture<Map<String, String>> getHash(String key);
 
     CompletableFuture<Long> getHashSize(String hashKey);

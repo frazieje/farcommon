@@ -189,6 +189,18 @@ public class SimpleCache<T> implements Cache<T> {
     }
 
     @Override
+    public CompletableFuture<Boolean> exists(String key) {
+        logger.debug("Cache KEY EXISTS? key:{}", key);
+        return cacheAdapter.exists(key);
+    }
+
+    @Override
+    public CompletableFuture<Boolean> hashItemExists(String hashKey, String itemKey) {
+        logger.debug("Cache HASH ITEM EXISTS? hashKey: {}, itemKey: {}", hashKey, itemKey);
+        return cacheAdapter.hashItemExists(hashKey, itemKey);
+    }
+
+    @Override
     public CompletableFuture<Map<String, T>> getHash(String hashKey) {
         logger.debug("Cache HASH GET hashKey: {}, cache type: {}", hashKey, clazz.getSimpleName());
         return cacheAdapter.getHash(keyPrefix + hashKey)

@@ -26,6 +26,19 @@ public class RedisCacheAdapter implements CacheAdapter {
     }
 
     @Override
+    public CompletableFuture<Boolean> exists(String key) {
+        return redisAsyncCommands.exists(key)
+                .thenApply(this::parseResponse)
+                .toCompletableFuture();
+    }
+
+    @Override
+    public CompletableFuture<Boolean> hashItemExists(String hashKey, String itemKey) {
+        return redisAsyncCommands.hexists(hashKey, itemKey)
+                .toCompletableFuture();
+    }
+
+    @Override
     public CompletableFuture<Boolean> put(String key, String item) {
         return redisAsyncCommands.set(key, item)
                 .thenApply(this::parseResponse)
