@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-@Disabled
 public class CertificateGenerationTests {
 
     private TLSContextGenerator generator;
@@ -44,9 +43,9 @@ public class CertificateGenerationTests {
 
         expectedCaKeyType = "RSA";
 
-        expectedSignatureAlgorithm = "SHA256withRSA";
+        expectedSignatureAlgorithm = "SHA256WithRSA";
 
-        generator = new InternalTLSContextGenerator(expectedCaKeyType, expectedSignatureAlgorithm, null);
+        generator = new BouncyCastleTLSContextGenerator(expectedCaKeyType, expectedSignatureAlgorithm);
 
         expectedCaCommonName = "SpoohappsGatewayMQCA";
 
@@ -70,6 +69,7 @@ public class CertificateGenerationTests {
 
         expectedClientKeyBits = 2048;
         expectedClientCommonName = "someClient@domain.com";
+
         clientContext = generator.signedClientTlsContext(expectedClientKeyBits, expectedClientCommonName, expectedClientCertValidForSeconds, caCertContext);
 
 
@@ -108,7 +108,7 @@ public class CertificateGenerationTests {
 
     @Test
     public void shouldGenerateCaCertificateWithCorrectSigningAlgorithm() {
-        assertEquals(expectedSignatureAlgorithm, caCertContext.getCertificate().getSigAlgName());
+        assertEquals(expectedSignatureAlgorithm.toLowerCase(), caCertContext.getCertificate().getSigAlgName().toLowerCase());
     }
 
     @Test
@@ -148,7 +148,7 @@ public class CertificateGenerationTests {
         long timeDiffMillis =
                 Math.abs(expectedCaCertificateExpirationTimeInMillis - caCertContext.getCertificate().getNotAfter().getTime());
 
-        assertTrue(timeDiffMillis <= 5000);
+        assertTrue(Math.abs(timeDiffMillis) <= 10000);
     }
 
     @Test
@@ -156,28 +156,21 @@ public class CertificateGenerationTests {
         long timeDiffMillis =
                 Math.abs(expectedCaCertificateStartTimeInMillis - caCertContext.getCertificate().getNotBefore().getTime());
 
-        assertTrue(timeDiffMillis <= 5000);
+        assertTrue(Math.abs(timeDiffMillis) <= 10000);
     }
 
     @Test
     public void shouldGenerateCaCertificateWithBasicConstraints() throws IOException, CertificateEncodingException {
-        writeToPemFile(caCertContext.getCertificate());
+        writeToPemFile(caCertContext.getCertificate(), "testcacert.pem");
 
         int test = caCertContext.getCertificate().getBasicConstraints();
 
     }
 
-
-
-
-
-
-
-
     @Test
     public void shouldGenerateSignedClientCertificate() throws IOException, CertificateEncodingException {
         assertNotNull(clientContext.getCertificate());
-        writeToPemFile(clientContext.getCertificate());
+        writeToPemFile(clientContext.getCertificate(), "testclientcert.pem");
     }
 
     @Test
@@ -198,7 +191,7 @@ public class CertificateGenerationTests {
 
 
 
-    private void writeToPemFile(X509Certificate cert) throws IOException, CertificateEncodingException {
+    private void writeToPemFile(X509Certificate cert, String fileName) throws IOException, CertificateEncodingException {
         StringBuilder sb = new StringBuilder();
 
         String lineSeparator = System.getProperty("line.separator");
@@ -209,7 +202,7 @@ public class CertificateGenerationTests {
         sb.append(encoder.encodeToString(cert.getEncoded())).append(lineSeparator);
         sb.append("-----END CERTIFICATE-----").append(lineSeparator);
 
-        String writePath = "~/testcert.pem";
+        String writePath = "~/" + fileName;
 
         Files.write(Paths.get(writePath.replaceFirst("^~", System.getProperty("user.home"))), sb.toString().getBytes(StandardCharsets.UTF_8));
 
