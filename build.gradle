@@ -1,14 +1,14 @@
 plugins {
     id 'java'
     id 'maven-publish'
-    id 'com.jfrog.artifactory' version '4.9.7'
+    id 'com.jfrog.artifactory' version '4.15.1'
 }
 
 group 'com.spoohapps'
 
-version '0.9.3'
+version '0.9.5'
 
-sourceCompatibility = 1.8
+sourceCompatibility = JavaVersion.VERSION_1_8
 
 repositories {
     mavenCentral()
@@ -16,12 +16,8 @@ repositories {
 }
 
 jar {
-    from sourceSets.main.output
     from (sourceSets.test.output) {
         include "com/spoohapps/farcommon/testhelpers/**"
-    }
-    from {
-        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
     }
 }
 
