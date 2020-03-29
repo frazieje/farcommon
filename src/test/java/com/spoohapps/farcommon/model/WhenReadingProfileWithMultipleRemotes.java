@@ -94,7 +94,7 @@ public class WhenReadingProfileWithMultipleRemotes {
         TLSContext remoteMessagingContext = new TLSContext(ProfileFileHelper.remoteMessagingCertificate(), ProfileFileHelper.remoteMessagingPrivateKey(), ProfileFileHelper.remoteMessagingCaCertificate());
         TLSContext remoteAuthContext = new TLSContext(ProfileFileHelper.remoteAuthCertificate(), ProfileFileHelper.remoteAuthPrivateKey(), ProfileFileHelper.remoteAuthCaCertificate());
 
-        Profile p = Profile.from()
+        Profile p = Profile.builder()
                 .setId(expectedProfileId)
                 .setNodeHost(ProfileFileHelper.nodeHost())
                 .setNodePort(ProfileFileHelper.nodePort())
@@ -117,7 +117,7 @@ public class WhenReadingProfileWithMultipleRemotes {
         TLSContext remoteMessagingContext = new TLSContext(ProfileFileHelper.remoteMessagingCertificate(), ProfileFileHelper.remoteMessagingPrivateKey(), ProfileFileHelper.remoteMessagingCaCertificate());
         TLSContext remoteAuthContext = new TLSContext(ProfileFileHelper.remoteAuthCertificate(), ProfileFileHelper.remoteAuthPrivateKey(), ProfileFileHelper.remoteAuthCaCertificate());
 
-        Profile p = Profile.from()
+        Profile p = Profile.builder()
                 .setId(expectedProfileId)
                 .setNodeHost(ProfileFileHelper.nodeHost())
                 .setNodePort(ProfileFileHelper.nodePort())

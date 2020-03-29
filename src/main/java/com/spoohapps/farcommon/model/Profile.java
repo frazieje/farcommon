@@ -147,7 +147,7 @@ public class Profile {
         return remoteAuthHostAndPort != null && remoteAuthContext != null && remoteAuthContext.hasValue();
     }
 
-    public static Profile.Builder from() {
+    public static Profile.Builder builder() {
         return new Profile.Builder();
     }
 
