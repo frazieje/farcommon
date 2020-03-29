@@ -22,6 +22,8 @@ public class TLSContext {
     private RSAPrivateKey privateKey;
     private X509Certificate caCertificate;
 
+    private HostAndPort hostAndPort;
+
     public TLSContext() {
 
     }

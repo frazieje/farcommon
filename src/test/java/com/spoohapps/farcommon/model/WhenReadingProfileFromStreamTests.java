@@ -29,6 +29,16 @@ public class WhenReadingProfileFromStreamTests {
     }
 
     @Test
+    public void shouldHaveCorrectHost() {
+        assertEquals(ProfileFileHelper.nodeHost(), profile.getNodeHost());
+    }
+
+    @Test
+    public void shouldHaveCorrectPort() {
+        assertEquals(ProfileFileHelper.nodePort(), profile.getNodePort());
+    }
+
+    @Test
     public void shouldHaveTheCorrectCertificate() throws CertificateException {
         assertArrayEquals(profile.getNodeContext().getCertificate().getEncoded(), ProfileFileHelper.nodeCertificate().getEncoded());
     }

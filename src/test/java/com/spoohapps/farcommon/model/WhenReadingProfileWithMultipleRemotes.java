@@ -79,17 +79,44 @@ public class WhenReadingProfileWithMultipleRemotes {
         TLSContext nodeContext = new TLSContext(ProfileFileHelper.nodeCertificate(), ProfileFileHelper.nodePrivateKey(), ProfileFileHelper.nodeCaCertificate());
         TLSContext remoteMessagingContext = new TLSContext(ProfileFileHelper.remoteMessagingCertificate(), ProfileFileHelper.remoteMessagingPrivateKey(), ProfileFileHelper.remoteMessagingCaCertificate());
         TLSContext remoteAuthContext = new TLSContext(ProfileFileHelper.remoteAuthCertificate(), ProfileFileHelper.remoteAuthPrivateKey(), ProfileFileHelper.remoteAuthCaCertificate());
-        assertEquals(Profile.from(expectedProfileId, nodeContext, remoteMessagingContext, remoteAuthContext),
-                profile);
+
+        Profile p = Profile.from()
+                .setId(expectedProfileId)
+                .setNodeHost(ProfileFileHelper.nodeHost())
+                .setNodePort(ProfileFileHelper.nodePort())
+                .setNodeContext(nodeContext)
+                .setRemoteMessageHost(ProfileFileHelper.remoteMessagingHost())
+                .setRemoteMessagePort(ProfileFileHelper.remoteMessagingPort())
+                .setRemoteMessageContext(remoteMessagingContext)
+                .setRemoteAuthHost(ProfileFileHelper.nodeHost())
+                .setRemoteAuthPort(ProfileFileHelper.nodePort())
+                .setRemoteAuthContext(remoteAuthContext)
+                .build();
+
+        assertEquals(profile, p);
     }
 
     @Test
     public void hashCodeShouldEqualOtherProfile() throws CertificateException, InvalidKeySpecException, NoSuchAlgorithmException {
+
         TLSContext nodeContext = new TLSContext(ProfileFileHelper.nodeCertificate(), ProfileFileHelper.nodePrivateKey(), ProfileFileHelper.nodeCaCertificate());
         TLSContext remoteMessagingContext = new TLSContext(ProfileFileHelper.remoteMessagingCertificate(), ProfileFileHelper.remoteMessagingPrivateKey(), ProfileFileHelper.remoteMessagingCaCertificate());
         TLSContext remoteAuthContext = new TLSContext(ProfileFileHelper.remoteAuthCertificate(), ProfileFileHelper.remoteAuthPrivateKey(), ProfileFileHelper.remoteAuthCaCertificate());
-        assertEquals(Profile.from(expectedProfileId, nodeContext, remoteMessagingContext, remoteAuthContext).hashCode(),
-                profile.hashCode());
+
+        Profile p = Profile.from()
+                .setId(expectedProfileId)
+                .setNodeHost(ProfileFileHelper.nodeHost())
+                .setNodePort(ProfileFileHelper.nodePort())
+                .setNodeContext(nodeContext)
+                .setRemoteMessageHost(ProfileFileHelper.remoteMessagingHost())
+                .setRemoteMessagePort(ProfileFileHelper.remoteMessagingPort())
+                .setRemoteMessageContext(remoteMessagingContext)
+                .setRemoteAuthHost(ProfileFileHelper.nodeHost())
+                .setRemoteAuthPort(ProfileFileHelper.nodePort())
+                .setRemoteAuthContext(remoteAuthContext)
+                .build();
+
+        assertEquals(profile.hashCode(), p.hashCode());
     }
 
 }

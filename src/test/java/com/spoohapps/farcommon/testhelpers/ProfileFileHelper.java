@@ -1,5 +1,6 @@
 package com.spoohapps.farcommon.testhelpers;
 
+import com.spoohapps.farcommon.model.HostAndPort;
 import com.spoohapps.farcommon.model.Profile;
 import com.spoohapps.farcommon.util.TLSUtils;
 
@@ -98,6 +99,27 @@ public class ProfileFileHelper {
         return TLSUtils.certificateFrom(getNodeCertificateContents());
     }
 
+    private static final HostAndPort nodeHostAndPort = new HostAndPort("some.host.com:1234");
+
+    public static String nodeHost() {
+        return nodeHostAndPort.getHost();
+    }
+
+    public static int nodePort() {
+        return nodeHostAndPort.getPort();
+    }
+
+    private static final HostAndPort remoteMessagingHostAndPort = new HostAndPort("some.host.com:1234");
+
+    public static String remoteMessagingHost() {
+        return remoteMessagingHostAndPort.getHost();
+    }
+
+    public static int remoteMessagingPort() {
+        return remoteMessagingHostAndPort.getPort();
+    }
+
+
     public static X509Certificate nodeCaCertificate() throws CertificateException {
         return TLSUtils.certificateFrom(getCaCertificateContents());
     }
@@ -165,6 +187,7 @@ public class ProfileFileHelper {
         StringBuilder buf = new StringBuilder();
         Consumer<String> w = getWriter(buf);
         w.accept(startDelimiter);
+        buf.append(getNodeHostAndPortContents());
         w.accept("-----BEGIN CLIENT CERT AND KEY-----");
         buf.append(getNodePrivateKeyContents());
         buf.append(getNodeCertificateContents());
@@ -180,6 +203,7 @@ public class ProfileFileHelper {
         StringBuilder buf = new StringBuilder();
         Consumer<String> w = getWriter(buf);
         w.accept(startDelimiter);
+        buf.append(getRemoteMessagingHostAndPortContents());
         w.accept("-----BEGIN CLIENT CERT AND KEY-----");
         buf.append(getRemoteMessagingPrivateKeyContents());
         buf.append(getRemoteMessagingCertificateContents());
@@ -188,6 +212,24 @@ public class ProfileFileHelper {
         buf.append(getCaCertificateContents());
         w.accept("-----END CA CERT-----");
         w.accept(endDelimiter);
+        return buf.toString();
+    }
+
+    private static String getNodeHostAndPortContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN HOST AND PORT-----");
+        w.accept(nodeHostAndPort.toString());
+        w.accept("-----END HOST AND PORT-----");
+        return buf.toString();
+    }
+
+    private static String getRemoteMessagingHostAndPortContents() {
+        StringBuilder buf = new StringBuilder();
+        Consumer<String> w = getWriter(buf);
+        w.accept("-----BEGIN HOST AND PORT-----");
+        w.accept(remoteMessagingHostAndPort.toString());
+        w.accept("-----END HOST AND PORT-----");
         return buf.toString();
     }
 

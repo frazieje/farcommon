@@ -17,6 +17,12 @@ public class Profile {
 
     private String id;
 
+    private HostAndPort nodeHostAndPort;
+
+    private HostAndPort remoteMessageHostAndPort;
+
+    private HostAndPort remoteAuthHostAndPort;
+
     private TLSContext nodeContext = new TLSContext();
 
     private TLSContext remoteMessageContext = new TLSContext();
@@ -29,29 +35,110 @@ public class Profile {
 
     }
 
-    public static Profile from(String id, TLSContext nodeContext, TLSContext remoteMessageContext, TLSContext remoteAuthContext) {
-        Profile p = from(id);
+    public static class Builder {
 
-        if (nodeContext != null) {
-            if (!nodeContext.hasValue())
-                throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the node client.");
-            p.nodeContext = nodeContext;
+        private String bId;
+        private String bNodeHost;
+        private int bNodePort;
+        private String bRemoteMessageHost;
+        private int bRemoteMessagePort;
+        private String bRemoteAuthHost;
+        private int bRemoteAuthPort;
+        private TLSContext bNodeContext = null;
+        private TLSContext bRemoteMessageContext = null;
+        private TLSContext bRemoteAuthContext = null;
+
+        public Builder() {
+
         }
 
-        if (remoteMessageContext != null) {
-            if (!remoteMessageContext.hasValue())
-                throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the remote messaging client.");
-            p.remoteMessageContext = remoteMessageContext;
+        public Builder setId(String id) {
+            bId = id;
+            return this;
         }
 
-        if (remoteAuthContext != null) {
-            if (!remoteAuthContext.hasValue())
-                throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the remote auth client.");
-            p.remoteAuthContext = remoteAuthContext;
+        public Builder setNodeHost(String nodeHost) {
+            bNodeHost = nodeHost;
+            return this;
         }
 
-        return p;
+        public Builder setNodePort(int nodePort) {
+            bNodePort = nodePort;
+            return this;
+        }
+
+        public Builder setNodeContext(TLSContext nodeContext) {
+            bNodeContext = nodeContext;
+            return this;
+        }
+
+        public Builder setRemoteMessageHost(String remoteMessageHost) {
+            bRemoteMessageHost = remoteMessageHost;
+            return this;
+        }
+
+        public Builder setRemoteMessagePort(int remoteMessagePort) {
+            bRemoteMessagePort = remoteMessagePort;
+            return this;
+        }
+
+        public Builder setRemoteMessageContext(TLSContext remoteMessageContext) {
+            bRemoteMessageContext = remoteMessageContext;
+            return this;
+        }
+
+        public Builder setRemoteAuthHost(String remoteAuthHost) {
+            bRemoteAuthHost = remoteAuthHost;
+            return this;
+        }
+
+        public Builder setRemoteAuthPort(int remoteAuthPort) {
+            bRemoteAuthPort = remoteAuthPort;
+            return this;
+        }
+
+        public Builder setRemoteAuthContext(TLSContext remoteAuthContext) {
+            bRemoteAuthContext = remoteAuthContext;
+            return this;
+        }
+
+        public Profile build() {
+
+            Profile p = from(bId);
+
+            p.nodeHostAndPort = new HostAndPort(bNodeHost + ":" + bNodePort);
+
+            if (bNodeContext != null) {
+                if (!bNodeContext.hasValue())
+                    throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the node client.");
+                p.nodeContext = bNodeContext;
+            }
+
+            p.remoteMessageHostAndPort = new HostAndPort(bRemoteMessageHost + ":" + bRemoteMessagePort);
+
+            if (bRemoteMessageContext != null) {
+                if (!bRemoteMessageContext.hasValue())
+                    throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the remote messaging client.");
+                p.remoteMessageContext = bRemoteMessageContext;
+            }
+
+            p.remoteAuthHostAndPort = new HostAndPort(bRemoteAuthHost + ":" + bRemoteAuthPort);
+
+            if (bRemoteAuthContext != null) {
+                if (!bRemoteAuthContext.hasValue())
+                    throw new IllegalArgumentException("Could not create profile. Incomplete TLS credentials for the remote auth client.");
+                p.remoteAuthContext = bRemoteAuthContext;
+            }
+
+            return p;
+        }
+
     }
+
+    public static Profile.Builder from() {
+        return new Profile.Builder();
+    }
+
 
     public static Profile from(String id) {
         if (id == null)
@@ -112,7 +199,7 @@ public class Profile {
     private void readNode(String section) {
         String node = removeFirstAndLastLines(section);
         try {
-            readSection(new StringReader(node), getSectionDetailDelimiters(this::readNodePrivateKey, this::readNodeCertificate, this::readNodeCaCertificate));
+            readSection(new StringReader(node), getSectionDetailDelimiters(this::readNodeHostAndPort, this::readNodePrivateKey, this::readNodeCertificate, this::readNodeCaCertificate));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Improper profile format: could not read node section");
@@ -122,7 +209,7 @@ public class Profile {
     private void readRemoteMessaging(String section) {
         String api = removeFirstAndLastLines(section);
         try {
-            readSection(new StringReader(api), getSectionDetailDelimiters(this::readRemoteMessagePrivateKey, this::readRemoteMessageCertificate, this::readRemoteMessageCaCertificate));
+            readSection(new StringReader(api), getSectionDetailDelimiters(this::readRemoteMessageHostAndPort, this::readRemoteMessagePrivateKey, this::readRemoteMessageCertificate, this::readRemoteMessageCaCertificate));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Improper profile format: could not read remote messaging section");
@@ -132,11 +219,23 @@ public class Profile {
     private void readRemoteAuth(String section) {
         String api = removeFirstAndLastLines(section);
         try {
-            readSection(new StringReader(api), getSectionDetailDelimiters(this::readRemoteAuthPrivateKey, this::readRemoteAuthCertificate, this::readRemoteAuthCaCertificate));
+            readSection(new StringReader(api), getSectionDetailDelimiters(this::readRemoteAuthHostAndPort, this::readRemoteAuthPrivateKey, this::readRemoteAuthCertificate, this::readRemoteAuthCaCertificate));
         } catch (IOException e) {
             e.printStackTrace();
             throw new IllegalArgumentException("Improper profile format: could not read remote auth section");
         }
+    }
+
+    private void readHostAndPort(String section, Consumer<String> readHostAndPort) {
+
+        if (section == null || section.length() == 0)
+            throw new IllegalArgumentException("Improper profile format: no profile id found");
+
+        String data = removeFirstAndLastLines(section);
+
+        String lower = data.toLowerCase().trim();
+
+        readHostAndPort.accept(lower);
     }
 
     private void readClientCertAndKey(String section, Consumer<String> readKey, Consumer<String> readCert) {
@@ -159,7 +258,6 @@ public class Profile {
         }
     }
 
-
     private void readProfileId(String section) {
         if (section == null || section.length() == 0)
             throw new IllegalArgumentException("Improper profile format: no profile id found");
@@ -180,6 +278,14 @@ public class Profile {
             if (!profileIdCharacterString.contains(id.substring(i, i+1))) {
                 throw new IllegalArgumentException("Improper profile format: profile must only contain characters 0-9 and a-f");
             }
+        }
+    }
+
+    private void readRemoteMessageHostAndPort(String hostAndPort) {
+        try {
+            remoteMessageHostAndPort = new HostAndPort(hostAndPort);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Problem reading remote messaging host and port", e);
         }
     }
 
@@ -207,6 +313,14 @@ public class Profile {
         }
     }
 
+    private void readRemoteAuthHostAndPort(String hostAndPort) {
+        try {
+            remoteAuthHostAndPort = new HostAndPort(hostAndPort);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Problem reading remote auth host and port", e);
+        }
+    }
+
     private void readRemoteAuthPrivateKey(String privateKey) {
         try {
             remoteAuthContext.setPrivateKey(privateKey);
@@ -228,6 +342,14 @@ public class Profile {
             remoteAuthContext.setCaCertificate(certificate);
         } catch (TLSContextException e) {
             throw new IllegalArgumentException("Problem reading remote auth ca certificate: " + e.getMessage());
+        }
+    }
+
+    private void readNodeHostAndPort(String hostAndPort) {
+        try {
+            nodeHostAndPort = new HostAndPort(hostAndPort);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Problem reading node host and port", e);
         }
     }
 
@@ -266,21 +388,21 @@ public class Profile {
         }
 
         if (nodeContext != null && nodeContext.hasValue()) {
-            writeSection(encoder, buf, nodeContext, nodeStartDelimiter, nodeEndDelimiter);
+            writeSection(encoder, buf, nodeHostAndPort, nodeContext, nodeStartDelimiter, nodeEndDelimiter);
         }
 
         if (remoteMessageContext != null && remoteMessageContext.hasValue()) {
-            writeSection(encoder, buf, remoteMessageContext, remoteMessageStartDelimiter, remoteMessageEndDelimiter);
+            writeSection(encoder, buf, remoteMessageHostAndPort, remoteMessageContext, remoteMessageStartDelimiter, remoteMessageEndDelimiter);
         }
 
         if (remoteAuthContext != null && remoteAuthContext.hasValue()) {
-            writeSection(encoder, buf, remoteAuthContext, remoteAuthStartDelimiter, remoteAuthEndDelimiter);
+            writeSection(encoder, buf, remoteAuthHostAndPort, remoteAuthContext, remoteAuthStartDelimiter, remoteAuthEndDelimiter);
         }
 
         return buf.toString().getBytes(StandardCharsets.UTF_8);
     }
 
-    private void writeSection(Base64.Encoder encoder, StringBuilder buf, TLSContext context, String startDelimiter, String endDelimiter) {
+    private void writeSection(Base64.Encoder encoder, StringBuilder buf, HostAndPort hostAndPort, TLSContext context, String startDelimiter, String endDelimiter) {
         if (context.hasValue()) {
             try {
                 String cert = encoder.encodeToString(context.getCertificate().getEncoded());
@@ -288,6 +410,10 @@ public class Profile {
                 String cacert = encoder.encodeToString(context.getCaCertificate().getEncoded());
 
                 buf.append(startDelimiter).append(lineSeparator);
+
+                buf.append(hostAndPortStartDelimiter).append(lineSeparator);
+                buf.append(hostAndPort).append(lineSeparator);
+                buf.append(hostAndPortEndDelimiter).append(lineSeparator);
 
                 buf.append(clientCertAndKeyStartDelimiter).append(lineSeparator);
 
@@ -344,12 +470,36 @@ public class Profile {
         return id;
     }
 
+    public String getNodeHost() {
+        return nodeHostAndPort.getHost();
+    }
+
+    public int getNodePort() {
+        return nodeHostAndPort.getPort();
+    }
+
     public TLSContext getNodeContext() {
         return nodeContext;
     }
 
+    public String getRemoteMessageHost() {
+        return remoteMessageHostAndPort.getHost();
+    }
+
+    public int getRemoteMessagePort() {
+        return remoteMessageHostAndPort.getPort();
+    }
+
     public TLSContext getRemoteMessageContext() {
         return remoteMessageContext;
+    }
+
+    public String getRemoteAuthHost() {
+        return remoteAuthHostAndPort.getHost();
+    }
+
+    public int getRemoteAuthPort() {
+        return remoteAuthHostAndPort.getPort();
     }
 
     public TLSContext getRemoteAuthContext() {
@@ -360,6 +510,9 @@ public class Profile {
 
     private static final String profileIdStartDelimiter = "-----BEGIN PROFILE IDENTIFIER-----";
     private static final String profileIdEndDelimiter = "-----END PROFILE IDENTIFIER-----";
+
+    private static final String hostAndPortStartDelimiter = "-----BEGIN HOST AND PORT-----";
+    private static final String hostAndPortEndDelimiter = "-----END HOST AND PORT-----";
 
     private static final String nodeStartDelimiter = "-----BEGIN NODE-----";
     private static final String nodeEndDelimiter = "-----END NODE-----";
@@ -397,8 +550,11 @@ public class Profile {
                             this::readRemoteAuth)
             ).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
 
-    private Map<String, Map.Entry<String, Consumer<String>>> getSectionDetailDelimiters(Consumer<String> readKey, Consumer<String> readCert, Consumer<String> readCaCert) {
+    private Map<String, Map.Entry<String, Consumer<String>>> getSectionDetailDelimiters(Consumer<String> readHostAndPort, Consumer<String> readKey, Consumer<String> readCert, Consumer<String> readCaCert) {
         return Collections.unmodifiableMap(Stream.of(
+                getEntry(hostAndPortStartDelimiter,
+                        hostAndPortEndDelimiter,
+                        str -> readHostAndPort(str, readHostAndPort)),
                 getEntry(clientCertAndKeyStartDelimiter,
                         clientCertAndKeyEndDelimiter,
                         str -> readClientCertAndKey(str, readKey, readCert)),

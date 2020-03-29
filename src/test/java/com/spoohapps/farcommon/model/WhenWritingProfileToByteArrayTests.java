@@ -20,11 +20,19 @@ public class WhenWritingProfileToByteArrayTests {
 
     @BeforeAll
     public void setup() throws InvalidKeySpecException, NoSuchAlgorithmException, CertificateException {
+
         TLSContext nodeContext = new TLSContext();
+
         nodeContext.setPrivateKey(ProfileFileHelper.nodePrivateKey());
         nodeContext.setCertificate(ProfileFileHelper.nodeCertificate());
         nodeContext.setCaCertificate(ProfileFileHelper.nodeCaCertificate());
-        profile = Profile.from(expectedProfileId, nodeContext, null, null);
+
+        profile = Profile.from()
+                    .setId(expectedProfileId)
+                    .setNodeHost(ProfileFileHelper.nodeHost())
+                    .setNodePort(ProfileFileHelper.nodePort())
+                    .setNodeContext(nodeContext)
+                    .build();
     }
 
     @Test

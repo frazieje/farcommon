@@ -32,7 +32,15 @@ public class WhenWritingRemoteProfileToByteArrayTests {
         remoteMessageContext.setCaCertificate(ProfileFileHelper.remoteMessagingCaCertificate());
 
 
-        profile = Profile.from(expectedProfileId, nodeContext, remoteMessageContext, null);
+        profile = Profile.from()
+                    .setId(expectedProfileId)
+                    .setNodeHost(ProfileFileHelper.nodeHost())
+                    .setNodePort(ProfileFileHelper.nodePort())
+                    .setNodeContext(nodeContext)
+                    .setRemoteMessageHost(ProfileFileHelper.remoteMessagingHost())
+                    .setRemoteMessagePort(ProfileFileHelper.remoteMessagingPort())
+                    .setRemoteMessageContext(remoteMessageContext)
+                    .build();
     }
 
     @Test
