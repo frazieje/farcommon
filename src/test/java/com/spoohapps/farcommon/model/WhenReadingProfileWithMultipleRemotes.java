@@ -9,8 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.cert.CertificateException;
 import java.security.spec.InvalidKeySpecException;
 
-import static org.junit.jupiter.api.Assertions.assertArrayEquals;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class WhenReadingProfileWithMultipleRemotes {
@@ -72,6 +71,21 @@ public class WhenReadingProfileWithMultipleRemotes {
     @Test
     public void shouldHaveTheCorrectRemoteAuthCaCertificate() throws CertificateException {
         assertArrayEquals(profile.getRemoteAuthContext().getCaCertificate().getEncoded(), ProfileFileHelper.remoteAuthCaCertificate().getEncoded());
+    }
+
+    @Test
+    public void shouldHaveNodeValue() {
+        assertTrue(profile.hasNodeValue());
+    }
+
+    @Test
+    public void shouldHaveRemoteMessagingValue() {
+        assertTrue(profile.hasRemoteMessageValue());
+    }
+
+    @Test
+    public void shouldHaveRemoteAuthValue() {
+        assertTrue(profile.hasRemoteAuthValue());
     }
 
     @Test

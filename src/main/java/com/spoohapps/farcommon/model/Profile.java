@@ -135,6 +135,18 @@ public class Profile {
 
     }
 
+    public boolean hasNodeValue() {
+        return nodeHostAndPort != null && nodeContext != null && nodeContext.hasValue();
+    }
+
+    public boolean hasRemoteMessageValue() {
+        return remoteMessageHostAndPort != null && remoteMessageContext != null && remoteMessageContext.hasValue();
+    }
+
+    public boolean hasRemoteAuthValue() {
+        return remoteAuthHostAndPort != null && remoteAuthContext != null && remoteAuthContext.hasValue();
+    }
+
     public static Profile.Builder from() {
         return new Profile.Builder();
     }
