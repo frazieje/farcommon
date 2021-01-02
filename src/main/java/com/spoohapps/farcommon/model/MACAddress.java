@@ -1,20 +1,18 @@
 package com.spoohapps.farcommon.model;
 
 
-import com.spoohapps.farcommon.util.EUI48AddressValidator;
-import com.spoohapps.farcommon.util.EUI48AddressValidatorImpl;
-
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
+import java.util.regex.Pattern;
 
-public class EUI48Address implements Serializable {
+public class MACAddress implements Serializable {
 
-    private transient EUI48AddressValidator eui48AddressValidator = new EUI48AddressValidatorImpl();
+    public MACAddress() {}
 
-    public EUI48Address() {}
+    public final Pattern pattern = Pattern.compile("^((([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2}))|(([0-9A-Fa-f]{2}[:-]?){7}([0-9A-Fa-f]{2})))$");
 
-    public EUI48Address(String address) {
+    public MACAddress(String address) {
 
         String addressStr = address.trim();
         String nameStr = null;
@@ -25,23 +23,23 @@ public class EUI48Address implements Serializable {
             nameStr = address.substring(index + 1);
         }
 
-        if (!eui48AddressValidator.validate(addressStr))
-            throw new IllegalArgumentException("Not a valid EUI-48 address.");
+        if (!pattern.matcher(addressStr).matches())
+            throw new IllegalArgumentException("Not a valid EUI-48 or EUI-64 address.");
 
         data = hexStringToByteArray(addressStr);
         name = nameStr;
     }
 
-    public EUI48Address(byte[] data) {
+    public MACAddress(byte[] data) {
         this.data = data;
     }
 
-    public EUI48Address(byte[] data, String name) {
+    public MACAddress(byte[] data, String name) {
         this(data);
         this.name = name;
     }
 
-    public EUI48Address(String address, String name) {
+    public MACAddress(String address, String name) {
         this(address + " " + name);
     }
 
@@ -74,25 +72,33 @@ public class EUI48Address implements Serializable {
         return new String(hexChars);
     }
 
-    public static EUI48Address random() {
+    public static MACAddress randomEUI48() {
+        return random(12);
+    }
+
+    public static MACAddress randomEUI64() {
+        return random(16);
+    }
+
+    private static MACAddress random(int lengthInHexChars) {
         Random random = new Random();
         String[] chars = new String[] { "A", "B", "C", "D", "E", "F" };
 
-        String address = "";
+        StringBuilder address = new StringBuilder();
 
-        for (int i = 1; i <= 12; i++) {
+        for (int i = 1; i <= lengthInHexChars; i++) {
             int num = Math.abs(random.nextInt()) % 16;
             if (num > 9) {
-                address += chars[num-10];
+                address.append(chars[num - 10]);
             } else {
-                address += num;
+                address.append(num);
             }
-            if (i % 2 == 0 && i != 12) {
-                address += ":";
+            if (i % 2 == 0 && i != lengthInHexChars) {
+                address.append(":");
             }
         }
 
-        return new EUI48Address(address);
+        return new MACAddress(address.toString());
     }
 
     public String getName() {
@@ -123,7 +129,7 @@ public class EUI48Address implements Serializable {
 
     @Override
     public boolean equals(Object other) {
-        EUI48Address otherAddress = (EUI48Address)other;
+        MACAddress otherAddress = (MACAddress)other;
         if (other == null)
             return false;
 

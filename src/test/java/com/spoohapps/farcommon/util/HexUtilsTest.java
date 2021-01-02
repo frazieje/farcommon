@@ -38,8 +38,10 @@ public class HexUtilsTest {
 
     private Stream<Arguments> hexStringToIntArguments() {
         return Stream.of(
+                Arguments.of(15, "f"),
                 Arguments.of(79, "4f"),
                 Arguments.of(65535, "ffff"),
+                Arguments.of(3535, "dcf"),
                 Arguments.of(255, "ff"),
                 Arguments.of(134, "86"),
                 Arguments.of(107, "6b"));
