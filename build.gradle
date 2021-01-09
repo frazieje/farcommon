@@ -6,7 +6,7 @@ plugins {
 
 group 'com.spoohapps'
 
-version '0.10.0'
+version '0.10.1'
 
 sourceCompatibility = JavaVersion.VERSION_1_8
 

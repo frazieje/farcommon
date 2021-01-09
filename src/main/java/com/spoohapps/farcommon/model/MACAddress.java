@@ -1,6 +1,8 @@
 package com.spoohapps.farcommon.model;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Random;
@@ -10,6 +12,7 @@ public class MACAddress implements Serializable {
 
     public MACAddress() {}
 
+    @JsonIgnore
     public final Pattern pattern = Pattern.compile("^((([0-9A-Fa-f]{2}[:-]?){5}([0-9A-Fa-f]{2}))|(([0-9A-Fa-f]{2}[:-]?){7}([0-9A-Fa-f]{2})))$");
 
     public MACAddress(String address) {
